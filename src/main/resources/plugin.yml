@@ -1,0 +1,11 @@
+name: SkyDefender
+version: 1.0
+main: fr.lliksel.skydefender.SkyDefender
+api-version: 1.16
+authors: [Lliksel]
+description: Plugin Sky Defender pour la 1.16.5
+
+commands:
+  sd:
+    description: Commande principale du Sky Defender
+    usage: /sd <start|stop|config>
