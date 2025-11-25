@@ -4,6 +4,7 @@ import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.model.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -14,11 +15,20 @@ public class GameManager {
     private final SkyDefender plugin;
     private final TeamManager team;
     private GameState gameState;
+    private Location bannerLocation;
 
     public GameManager(SkyDefender plugin, TeamManager team) {
         this.plugin = plugin;
         this.team = team;
         this.gameState = GameState.WAITING;
+    }
+
+    public void setBannerLocation(Location bannerLocation) {
+        this.bannerLocation = bannerLocation;
+    }
+
+    public Location getBannerLocation() {
+        return bannerLocation;
     }
 
     public void setGameState(GameState gameState) {

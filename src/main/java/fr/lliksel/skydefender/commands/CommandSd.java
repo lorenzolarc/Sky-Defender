@@ -8,6 +8,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.block.Block;
+import org.bukkit.block.Banner;
 
 public class CommandSd implements CommandExecutor {
 
@@ -22,7 +24,7 @@ public class CommandSd implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /sd <test|infos|start>");
+            sender.sendMessage(ChatColor.RED + "Usage: /sd <test|infos|start|banner>");
             return true;
         }
 
@@ -48,6 +50,23 @@ public class CommandSd implements CommandExecutor {
 
         if (args[0].equalsIgnoreCase("start")) {
             this.gameManager.setGameState(GameState.STARTING);
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("banner")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Seul un joueur peut définir la bannière.");
+                return true;
+            }
+            Player player = (Player) sender;
+            Block targetBlock = player.getTargetBlockExact(5);
+
+            if (targetBlock != null && targetBlock.getState() instanceof Banner) {
+                this.gameManager.setBannerLocation(targetBlock.getLocation());
+                player.sendMessage(ChatColor.GREEN + "La bannière a été définie avec succès !");
+            } else {
+                player.sendMessage(ChatColor.RED + "Vous devez regarder une bannière.");
+            }
             return true;
         }
 
