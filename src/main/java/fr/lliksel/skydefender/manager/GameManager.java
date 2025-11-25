@@ -2,10 +2,7 @@ package fr.lliksel.skydefender.manager;
 
 import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.model.GameState;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import static org.bukkit.Bukkit.getLogger;
@@ -94,6 +91,8 @@ public class GameManager {
     private void startGameLogic() {
         for (World world : this.plugin.getServer().getWorlds()) {
             world.setPVP(true);
+            world.setTime(0);
+            world.setDifficulty(Difficulty.NORMAL);
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.setHealth(20);
