@@ -3,6 +3,7 @@ package fr.lliksel.skydefender.manager;
 import fr.lliksel.skydefender.model.GameTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
@@ -10,10 +11,14 @@ import org.bukkit.scoreboard.Scoreboard;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import org.bukkit.World;
+import java.util.Random;
 
 public class TeamManager {
     private final List<GameTeam> teams;
     private final Scoreboard scoreboard;
+    private final Random random = new Random();
 
     public TeamManager() {
         this.teams = new ArrayList<>();
@@ -114,5 +119,31 @@ public class TeamManager {
             // On remet le scoreboard par défaut pour être propre
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
+    }
+
+    public boolean teleportPlayers() {
+        int min = -500;
+        int max = 500;
+
+        World world = Bukkit.getWorld("world");
+        if (world == null) {
+            world = Bukkit.getWorlds().get(0);
+        }
+
+        for (GameTeam team : this.teams) {
+            int x = random.nextInt(max - min) + min;
+            int z = random.nextInt(max - min) + min;
+
+            int y = world.getHighestBlockYAt(x, z);
+            Location teamLocation = new Location(world, x + 0.5, y + 1, z + 0.5);
+
+            for (UUID id : team.getPlayers()) {
+                Player player = Bukkit.getPlayer(id);
+                if (player != null && player.isOnline()) {
+                    player.teleport(teamLocation);
+                }
+            }
+        }
+        return true;
     }
 }

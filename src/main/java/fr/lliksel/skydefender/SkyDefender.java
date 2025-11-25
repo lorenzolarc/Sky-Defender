@@ -22,7 +22,7 @@ public class SkyDefender extends JavaPlugin implements Listener {
     public void onEnable() {
         // 1. Initialisation des managers
         this.teamManager = new TeamManager();
-        this.gameManager = new GameManager(this);
+        this.gameManager = new GameManager(this, this.teamManager);
 
         // 2. Message dans la console
         getLogger().info(ChatColor.GREEN + "========================================");
@@ -34,9 +34,9 @@ public class SkyDefender extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(this, this);
 
         // 4. Desactive le pvp pour le lobby
-        for (World world : this.getServer().getWorlds()) {
-            world.setPVP(false);
-        }
+//        for (World world : this.getServer().getWorlds()) {
+//            world.setPVP(false);
+//        }
     }
 
     @Override

@@ -7,13 +7,17 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import static org.bukkit.Bukkit.getLogger;
+
 public class GameManager {
 
     private final SkyDefender plugin;
+    private final TeamManager team;
     private GameState gameState;
 
-    public GameManager(SkyDefender plugin) {
+    public GameManager(SkyDefender plugin, TeamManager team) {
         this.plugin = plugin;
+        this.team = team;
         this.gameState = GameState.WAITING;
     }
 
@@ -78,7 +82,6 @@ public class GameManager {
     }
 
     private void startGameLogic() {
-        // Préparation basique des joueurs
         for (World world : this.plugin.getServer().getWorlds()) {
             world.setPVP(true);
         }
@@ -87,8 +90,9 @@ public class GameManager {
             player.setFoodLevel(20);
             player.getInventory().clear();
             player.setGameMode(org.bukkit.GameMode.SURVIVAL);
-            
-            // TODO: Utiliser le TeamManager pour téléporter les joueurs à leur point de spawn
+        }
+        if (!this.team.teleportPlayers()) {
+            getLogger().severe(ChatColor.RED + " [Sky Defender] Une erreur lors de la téléportation des joueurs est arrivé.");
         }
     }
 }
