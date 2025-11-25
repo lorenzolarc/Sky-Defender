@@ -1,6 +1,7 @@
 package fr.lliksel.skydefender;
 
 import fr.lliksel.skydefender.manager.TeamManager;
+import fr.lliksel.skydefender.manager.GameManager;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,11 +14,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class SkyDefender extends JavaPlugin implements Listener {
 
     private TeamManager teamManager;
+    private GameManager gameManager;
 
     @Override
     public void onEnable() {
         // 1. Initialisation des managers
         this.teamManager = new TeamManager();
+        this.gameManager = new GameManager(this);
 
         // 2. Message dans la console
         getLogger().info(ChatColor.GREEN + "========================================");
@@ -145,5 +148,13 @@ public class SkyDefender extends JavaPlugin implements Listener {
 
         teamManager.addPlayerToTeam(player, teamName);
         return true;
+    }
+
+    public TeamManager getTeamManager() {
+        return teamManager;
+    }
+
+    public GameManager getGameManager() {
+        return gameManager;
     }
 }
