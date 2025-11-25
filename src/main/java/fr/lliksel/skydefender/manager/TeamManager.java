@@ -146,4 +146,10 @@ public class TeamManager {
         }
         return true;
     }
+
+    public void removePlayerFromTeamWhenDeath(Player player) {
+        getPlayerTeam(player).ifPresent(team -> {
+            team.removePlayer(player.getUniqueId());
+        });
+    }
 }

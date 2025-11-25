@@ -2,6 +2,7 @@ package fr.lliksel.skydefender;
 
 import fr.lliksel.skydefender.manager.TeamManager;
 import fr.lliksel.skydefender.manager.GameManager;
+import fr.lliksel.skydefender.listeners.GameListener;
 import fr.lliksel.skydefender.model.GameState;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -32,11 +33,12 @@ public class SkyDefender extends JavaPlugin implements Listener {
 
         // 3. Enregistrement des événements
         getServer().getPluginManager().registerEvents(this, this);
+        getServer().getPluginManager().registerEvents(new GameListener(this), this);
 
         // 4. Desactive le pvp pour le lobby
-//        for (World world : this.getServer().getWorlds()) {
-//            world.setPVP(false);
-//        }
+        for (World world : this.getServer().getWorlds()) {
+            world.setPVP(false);
+        }
     }
 
     @Override
