@@ -4,6 +4,7 @@ import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.model.GameState;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class GameManager {
@@ -49,7 +50,7 @@ public class GameManager {
                         }
                         countdown--;
                     }
-                }.runTaskTimer(plugin, 0L, 20L); // 20 ticks = 1 seconde
+                }.runTaskTimer(plugin, 0L, 20L);
                 break;
 
             case PLAYING:
@@ -78,6 +79,9 @@ public class GameManager {
 
     private void startGameLogic() {
         // Préparation basique des joueurs
+        for (World world : this.plugin.getServer().getWorlds()) {
+            world.setPVP(true);
+        }
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.setHealth(20);
             player.setFoodLevel(20);
