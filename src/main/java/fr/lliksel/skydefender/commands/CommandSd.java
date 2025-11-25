@@ -49,6 +49,10 @@ public class CommandSd implements CommandExecutor {
         }
 
         if (args[0].equalsIgnoreCase("start")) {
+            if (gameManager.getBannerLocation() == null) {
+                sender.sendMessage(ChatColor.RED + "La bannière n'a pas été définie ! Utilisez /sd banner en regardant une bannière.");
+                return true;
+            }
             this.gameManager.setGameState(GameState.STARTING);
             return true;
         }

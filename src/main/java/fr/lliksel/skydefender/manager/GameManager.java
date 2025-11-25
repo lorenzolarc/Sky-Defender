@@ -5,6 +5,10 @@ import fr.lliksel.skydefender.model.GameState;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+
 import static org.bukkit.Bukkit.getLogger;
 
 public class GameManager {
@@ -13,6 +17,8 @@ public class GameManager {
     private final TeamManager team;
     private GameState gameState;
     private Location bannerLocation;
+    private final Map<UUID, Integer> kills = new HashMap<>();
+    private long gameStartTime;
 
     public GameManager(SkyDefender plugin, TeamManager team) {
         this.plugin = plugin;
@@ -28,6 +34,22 @@ public class GameManager {
         return bannerLocation;
     }
 
+    public void addKill(Player player) {
+        kills.put(player.getUniqueId(), getKills(player) + 1);
+    }
+
+    public int getKills(Player player) {
+        return kills.getOrDefault(player.getUniqueId(), 0);
+    }
+
+    public String getGameTime() {
+        if (gameState != GameState.PLAYING) return "00:00";
+        long duration = (System.currentTimeMillis() - gameStartTime) / 1000;
+        long minutes = duration / 60;
+        long seconds = duration % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
     public void setGameState(GameState gameState) {
         if (this.gameState == gameState) return;
 
@@ -36,11 +58,11 @@ public class GameManager {
         // Logique déclenchée lors du CHANGEMENT d'état
         switch (this.gameState) {
             case WAITING:
-                Bukkit.broadcastMessage(ChatColor.YELLOW + "[SkyDefender] En attente de joueurs...");
+                Bukkit.broadcastMessage(ChatColor.YELLOW + "[Sky Defender] En attente de joueurs...");
                 break;
 
             case STARTING:
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[SkyDefender] Le jeu va démarrer !");
+                Bukkit.broadcastMessage(ChatColor.GOLD + "[Sky Defender] Le jeu va démarrer !");
                 new org.bukkit.scheduler.BukkitRunnable() {
                     int countdown = 10;
 
@@ -65,12 +87,13 @@ public class GameManager {
                 break;
 
             case PLAYING:
-                Bukkit.broadcastMessage(ChatColor.GREEN + "[SkyDefender] La partie commence ! Bonne chance.");
+                this.gameStartTime = System.currentTimeMillis();
+                Bukkit.broadcastMessage(ChatColor.GREEN + "[Sky Defender] La partie commence ! Bonne chance.");
                 startGameLogic();
                 break;
 
             case FINISH:
-                Bukkit.broadcastMessage(ChatColor.RED + "[SkyDefender] La partie est terminée !");
+                Bukkit.broadcastMessage(ChatColor.RED + "[Sky Defender] La partie est terminée !");
                 // TODO: Téléporter les joueurs au lobby, arrêter les tâches, etc.
                 break;
         }

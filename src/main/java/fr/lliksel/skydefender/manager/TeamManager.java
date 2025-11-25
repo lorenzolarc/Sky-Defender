@@ -25,6 +25,25 @@ public class TeamManager {
         this.scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
     }
 
+    public void applyTeamsToScoreboard(Scoreboard sb) {
+        for (GameTeam gameTeam : this.teams) {
+            org.bukkit.scoreboard.Team t = sb.getTeam(gameTeam.getName());
+            if (t == null) {
+                t = sb.registerNewTeam(gameTeam.getName());
+            }
+            t.setColor(gameTeam.getColor());
+            t.setNameTagVisibility(NameTagVisibility.ALWAYS);
+            
+            // Add players to the team on this specific scoreboard
+            for (UUID uuid : gameTeam.getPlayers()) {
+                Player p = Bukkit.getPlayer(uuid);
+                if (p != null) {
+                    t.addEntry(p.getName());
+                }
+            }
+        }
+    }
+
     public Optional<GameTeam> getTeamByName(String name) {
         return teams.stream()
             .filter(team -> team.getName().equalsIgnoreCase(name))

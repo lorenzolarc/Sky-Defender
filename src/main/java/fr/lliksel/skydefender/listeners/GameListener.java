@@ -59,6 +59,12 @@ public class GameListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (gameManager.isState(GameState.PLAYING)) {
             Player player = event.getEntity();
+            Player killer = player.getKiller();
+
+            if (killer != null) {
+                gameManager.addKill(killer);
+            }
+
             event.setDeathMessage(null);
             this.teamManager.removePlayerFromTeamWhenDeath(player);
             Bukkit.broadcastMessage("[Sky Defender] " + player.getDisplayName() + " est mort.");

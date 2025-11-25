@@ -6,6 +6,7 @@ import fr.lliksel.skydefender.commands.CommandSd;
 import fr.lliksel.skydefender.listeners.GameListener;
 import fr.lliksel.skydefender.listeners.PlayerListener;
 import fr.lliksel.skydefender.manager.GameManager;
+import fr.lliksel.skydefender.manager.ScoreboardManager;
 import fr.lliksel.skydefender.manager.TeamManager;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -15,12 +16,14 @@ public class SkyDefender extends JavaPlugin {
 
     private TeamManager teamManager;
     private GameManager gameManager;
+    private ScoreboardManager scoreboardManager;
 
     @Override
     public void onEnable() {
         // 1. Initialisation des managers
         this.teamManager = new TeamManager();
         this.gameManager = new GameManager(this, this.teamManager);
+        this.scoreboardManager = new ScoreboardManager(this, this.gameManager, this.teamManager);
 
         // Création des équipes par défaut
         teamManager.createTeam("Defenseurs", ChatColor.BLUE, 5);
@@ -46,6 +49,9 @@ public class SkyDefender extends JavaPlugin {
         for (World world : this.getServer().getWorlds()) {
             world.setPVP(false);
         }
+        
+        // 6. Lancement des tâches
+        this.scoreboardManager.startScoreboardTask();
     }
 
     @Override
