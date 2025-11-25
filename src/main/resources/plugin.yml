@@ -9,3 +9,10 @@ commands:
   sd:
     description: Commande principale du Sky Defender
     usage: /sd <start|stop|config>
+  createteam:
+    description: Crée une nouvelle équipe.
+    usage: /createteam <nom> <couleur> <maxJoueurs>
+    permission: skydefender.admin
+  jointeam:
+    description: Rejoint une équipe.
+    usage: /jointeam <nom>
