@@ -17,7 +17,7 @@ public class GameManager {
     }
 
     public void setGameState(GameState gameState) {
-        if (this.gameState == gameState) return; // Si l'état est le même, on ne fait rien
+        if (this.gameState == gameState) return;
 
         this.gameState = gameState;
 
@@ -29,7 +29,27 @@ public class GameManager {
 
             case STARTING:
                 Bukkit.broadcastMessage(ChatColor.GOLD + "[SkyDefender] Le jeu va démarrer !");
-                // TODO: Ici, tu pourras lancer un BukkitRunnable (compte à rebours)
+                new org.bukkit.scheduler.BukkitRunnable() {
+                    int countdown = 10;
+
+                    @Override
+                    public void run() {
+                        if (countdown == 0) {
+                            setGameState(GameState.PLAYING);
+                            cancel();
+                            return;
+                        }
+
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            player.sendTitle(
+                                ChatColor.GOLD + "Démarrage dans",
+                                ChatColor.YELLOW + String.valueOf(countdown),
+                                10, 20, 10
+                            );
+                        }
+                        countdown--;
+                    }
+                }.runTaskTimer(plugin, 0L, 20L); // 20 ticks = 1 seconde
                 break;
 
             case PLAYING:

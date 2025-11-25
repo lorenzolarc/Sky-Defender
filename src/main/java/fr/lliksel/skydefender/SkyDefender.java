@@ -2,6 +2,7 @@ package fr.lliksel.skydefender;
 
 import fr.lliksel.skydefender.manager.TeamManager;
 import fr.lliksel.skydefender.manager.GameManager;
+import fr.lliksel.skydefender.model.GameState;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -61,6 +62,15 @@ public class SkyDefender extends JavaPlugin implements Listener {
         }
     }
 
+    private boolean handleStartCommand(CommandSender sender, String[] args) {
+        if (args.length == 0) {
+            sender.sendMessage(ChatColor.RED + "Usage: /sd start");
+            return false;
+        }
+        this.gameManager.setGameState(GameState.STARTING);
+        return true;
+    }
+
     private boolean handleSdCommand(CommandSender sender, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(ChatColor.RED + "Usage: /sd <test|infos>");
@@ -84,6 +94,11 @@ public class SkyDefender extends JavaPlugin implements Listener {
         if (args[0].equalsIgnoreCase("infos")) {
             sender.sendMessage(ChatColor.YELLOW + "Plugin version: " + getDescription().getVersion());
             sender.sendMessage(ChatColor.YELLOW + "Auteurs: " + getDescription().getAuthors());
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("start")) {
+            handleStartCommand(sender, args);
             return true;
         }
         return false;
