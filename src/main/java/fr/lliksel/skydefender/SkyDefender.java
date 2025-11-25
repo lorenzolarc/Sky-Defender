@@ -22,6 +22,11 @@ public class SkyDefender extends JavaPlugin {
         this.teamManager = new TeamManager();
         this.gameManager = new GameManager(this, this.teamManager);
 
+        // Création des équipes par défaut
+        teamManager.createTeam("Defenseurs", ChatColor.BLUE, 5);
+        teamManager.createTeam("Spectateur", ChatColor.GRAY, Integer.MAX_VALUE);
+        teamManager.createTeam("Rouge", ChatColor.RED, 3);
+
         // 2. Message dans la console
         getLogger().info(ChatColor.GREEN + "========================================");
         getLogger().info(ChatColor.GREEN + "SkyDefender (Test Build) est chargé ! (v 0.1)");
