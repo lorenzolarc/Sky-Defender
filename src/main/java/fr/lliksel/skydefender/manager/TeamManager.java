@@ -18,13 +18,15 @@ import org.bukkit.World;
 import java.util.Random;
 
 public class TeamManager {
+    private final ConfigManager configManager;
     private final List<GameTeam> teams;
     private final Scoreboard scoreboard;
     private final Random random = new Random();
     private final Map<UUID, String> previousTeams = new HashMap<>();
     private final Map<UUID, Location> deathLocations = new HashMap<>();
 
-    public TeamManager() {
+    public TeamManager(ConfigManager configManager) {
+        this.configManager = configManager;
         this.teams = new ArrayList<>();
         this.scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
     }
@@ -69,8 +71,24 @@ public class TeamManager {
         scoreboardTeam.setNameTagVisibility(NameTagVisibility.ALWAYS);
 
         GameTeam newTeam = new GameTeam(name, color, maxPlayers);
+        
+        // Load spawn from config if Defenseurs
+        if (name.equalsIgnoreCase("Defenseurs")) {
+            Location loc = configManager.getLocation("locations.defenseurs_spawn");
+            if (loc != null) {
+                newTeam.setSpawnLocation(loc);
+            }
+        }
+        
         this.teams.add(newTeam);
         return true;
+    }
+    
+    public void saveDefenderSpawn(Location loc) {
+        getTeamByName("Defenseurs").ifPresent(t -> {
+            t.setSpawnLocation(loc);
+            configManager.setLocation("locations.defenseurs_spawn", loc);
+        });
     }
 
     public boolean addPlayerToTeam(Player player, String teamName, boolean force) {
@@ -145,8 +163,8 @@ public class TeamManager {
     }
 
     public boolean teleportPlayers() {
-        int min = -500;
-        int max = 500;
+        int min = configManager.getConfig().getInt("game.random_tp.min", -500);
+        int max = configManager.getConfig().getInt("game.random_tp.max", 500);
 
         World world = Bukkit.getWorld("world");
         if (world == null) {

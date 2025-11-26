@@ -5,6 +5,7 @@ import fr.lliksel.skydefender.commands.CommandJoinTeam;
 import fr.lliksel.skydefender.commands.CommandSd;
 import fr.lliksel.skydefender.listeners.GameListener;
 import fr.lliksel.skydefender.listeners.PlayerListener;
+import fr.lliksel.skydefender.manager.ConfigManager;
 import fr.lliksel.skydefender.manager.GameManager;
 import fr.lliksel.skydefender.manager.ScoreboardManager;
 import fr.lliksel.skydefender.manager.TeamManager;
@@ -20,9 +21,13 @@ public class SkyDefender extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // 0. Config
+        ConfigManager configManager = new ConfigManager(this);
+        configManager.loadConfig();
+
         // 1. Initialisation des managers
-        this.teamManager = new TeamManager();
-        this.gameManager = new GameManager(this, this.teamManager);
+        this.teamManager = new TeamManager(configManager);
+        this.gameManager = new GameManager(this, this.teamManager, configManager);
         this.scoreboardManager = new ScoreboardManager(this, this.gameManager, this.teamManager);
 
         // Création des équipes par défaut

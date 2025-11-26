@@ -15,19 +15,23 @@ public class GameManager {
 
     private final SkyDefender plugin;
     private final TeamManager team;
+    private final ConfigManager configManager;
     private GameState gameState;
     private Location bannerLocation;
     private final Map<UUID, Integer> kills = new HashMap<>();
     private long gameStartTime;
 
-    public GameManager(SkyDefender plugin, TeamManager team) {
+    public GameManager(SkyDefender plugin, TeamManager team, ConfigManager configManager) {
         this.plugin = plugin;
         this.team = team;
+        this.configManager = configManager;
         this.gameState = GameState.WAITING;
+        this.bannerLocation = configManager.getLocation("locations.banner");
     }
 
     public void setBannerLocation(Location bannerLocation) {
         this.bannerLocation = bannerLocation;
+        configManager.setLocation("locations.banner", bannerLocation);
     }
 
     public Location getBannerLocation() {
