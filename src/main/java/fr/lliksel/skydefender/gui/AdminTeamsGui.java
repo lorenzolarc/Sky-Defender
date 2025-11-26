@@ -57,10 +57,12 @@ public class AdminTeamsGui extends SkyDefenderGui {
         for (GameTeam team : teamManager.getTeams()) {
             if (slot >= 45) break;
 
+            String maxPlayersStr = team.getName().equalsIgnoreCase("Spectateur") ? "Illimité" : String.valueOf(team.getMaxPlayer());
+
             ItemStack item = new ItemBuilder(getWoolColor(team.getColor()))
                     .setName(team.getColor() + team.getName())
                     .setLore(
-                            ChatColor.GRAY + "Taille Max: " + ChatColor.WHITE + team.getMaxPlayer(),
+                            ChatColor.GRAY + "Taille Max: " + ChatColor.WHITE + maxPlayersStr,
                             ChatColor.GRAY + "Joueurs: " + ChatColor.WHITE + team.getPlayers().size(),
                             "",
                             ChatColor.YELLOW + ">> Clique gauche pour gérer",

@@ -10,27 +10,28 @@ import fr.lliksel.skydefender.manager.GameManager;
 import fr.lliksel.skydefender.manager.ScoreboardManager;
 import fr.lliksel.skydefender.manager.TeamManager;
 import org.bukkit.ChatColor;
+import org.bukkit.Difficulty;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SkyDefender extends JavaPlugin {
 
-        private TeamManager teamManager;
-        private GameManager gameManager;
-        private ScoreboardManager scoreboardManager;
-        private fr.lliksel.skydefender.manager.ChatInputManager chatInputManager;
-    
-        @Override
-        public void onEnable() {
-            // 0. Config
-            ConfigManager configManager = new ConfigManager(this);
-            configManager.loadConfig();
-    
-            // 1. Initialisation des managers
-            this.chatInputManager = new fr.lliksel.skydefender.manager.ChatInputManager(this);
-            this.teamManager = new TeamManager(configManager);
-            this.gameManager = new GameManager(this, this.teamManager, configManager);
-            this.scoreboardManager = new ScoreboardManager(this, this.gameManager, this.teamManager);
+    private TeamManager teamManager;
+    private GameManager gameManager;
+    private ScoreboardManager scoreboardManager;
+    private fr.lliksel.skydefender.manager.ChatInputManager chatInputManager;
+
+    @Override
+    public void onEnable() {
+        // 0. Config
+        ConfigManager configManager = new ConfigManager(this);
+        configManager.loadConfig();
+
+        // 1. Initialisation des managers
+        this.chatInputManager = new fr.lliksel.skydefender.manager.ChatInputManager(this);
+        this.teamManager = new TeamManager(configManager);
+        this.gameManager = new GameManager(this, this.teamManager, configManager);
+        this.scoreboardManager = new ScoreboardManager(this, this.gameManager, this.teamManager);
         // Création des équipes par défaut
         teamManager.createTeam("Defenseurs", ChatColor.BLUE, 5);
         teamManager.createTeam("Spectateur", ChatColor.GRAY, Integer.MAX_VALUE);
@@ -56,6 +57,7 @@ public class SkyDefender extends JavaPlugin {
         // 5. Configuration du monde (Lobby)
         for (World world : this.getServer().getWorlds()) {
             world.setPVP(false);
+            world.setDifficulty(Difficulty.PEACEFUL);
         }
         
         // 6. Lancement des tâches

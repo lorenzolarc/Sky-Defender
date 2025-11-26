@@ -125,7 +125,13 @@ public class GameManager {
             player.setHealth(20);
             player.setFoodLevel(20);
             player.getInventory().clear();
-            player.setGameMode(org.bukkit.GameMode.SURVIVAL);
+            
+            java.util.Optional<fr.lliksel.skydefender.model.GameTeam> teamOpt = team.getPlayerTeam(player);
+            if (teamOpt.isPresent() && teamOpt.get().getName().equalsIgnoreCase("Spectateur")) {
+                player.setGameMode(GameMode.SPECTATOR);
+            } else {
+                player.setGameMode(GameMode.SURVIVAL);
+            }
         }
         if (!this.team.teleportPlayers()) {
             getLogger().severe(ChatColor.RED + " [Sky Defender] Une erreur lors de la téléportation des joueurs est arrivé.");

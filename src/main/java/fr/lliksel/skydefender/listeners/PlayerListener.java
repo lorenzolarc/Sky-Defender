@@ -3,6 +3,7 @@ package fr.lliksel.skydefender.listeners;
 import fr.lliksel.skydefender.manager.TeamManager;
 import fr.lliksel.skydefender.utils.ItemBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -22,14 +23,15 @@ public class PlayerListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         event.setJoinMessage(player.getDisplayName() + " vient de rejoindre ! " + "(" + Bukkit.getOnlinePlayers().size() + "/" + Bukkit.getMaxPlayers() + ")");
+        player.setGameMode(GameMode.ADVENTURE);
 
         teamManager.updatePlayerDisplayName(player);
         
         player.getInventory().clear();
         ItemStack compass = new ItemBuilder(Material.COMPASS)
-                .setName("§e§lChoisir une équipe")
-                .setLore("§7Faites un clic droit", "§7pour choisir votre équipe.")
-                .toItemStack();
+            .setName("§e§lChoisir une équipe")
+            .setLore("§7Faites un clic droit", "§7pour choisir votre équipe.")
+            .toItemStack();
         player.getInventory().setItem(4, compass);
 
         if (player.isOp()) {

@@ -34,31 +34,24 @@ public class TeamEditorGui extends SkyDefenderGui {
 
         boolean isSystem = teamManager.isSystemTeam(team.getName());
 
-        // Nom (Read-only for now or limited)
         inventory.setItem(10, new ItemBuilder(Material.NAME_TAG)
-                .setName(ChatColor.YELLOW + "Nom: " + ChatColor.WHITE + team.getName())
-                .setLore(isSystem ? ChatColor.RED + "Non modifiable" : ChatColor.GRAY + "Non modifiable (pour l'instant)")
-                .toItemStack());
+            .setName(ChatColor.YELLOW + "Nom: " + ChatColor.WHITE + team.getName())
+            .setLore(isSystem ? ChatColor.RED + "Non modifiable" : ChatColor.GRAY + "Non modifiable (pour l'instant)")
+            .toItemStack());
 
-        // Couleur
-        // Note: Changing color requires complex logic (scoreboard team update etc),
-        // For this prototype, we might keep it simple or implement re-creation logic.
-        // Let's assume it's complex and just show it, or try to update it.
         inventory.setItem(12, new ItemBuilder(getWoolColor(team.getColor()))
-                .setName(ChatColor.YELLOW + "Couleur: " + team.getColor() + team.getColor().name())
-                .setLore(ChatColor.RED + "Non modifiable (Recréez l'équipe)")
-                .toItemStack());
+            .setName(ChatColor.YELLOW + "Couleur: " + team.getColor() + team.getColor().name())
+            .setLore(ChatColor.RED + "Non modifiable (Recréez l'équipe)")
+            .toItemStack());
 
-        // Taille
         inventory.setItem(14, new ItemBuilder(Material.PLAYER_HEAD)
-                .setName(ChatColor.YELLOW + "Taille Max")
-                .setLore(ChatColor.WHITE + "" + team.getMaxPlayer(), "", ChatColor.GRAY + "Clic gauche: +1", ChatColor.GRAY + "Clic droit: -1")
-                .toItemStack());
+            .setName(ChatColor.YELLOW + "Taille Max")
+            .setLore(ChatColor.WHITE + "" + team.getMaxPlayer(), "", ChatColor.GRAY + "Clic gauche: +1", ChatColor.GRAY + "Clic droit: -1")
+            .toItemStack());
 
-        // Retour
         inventory.setItem(26, new ItemBuilder(Material.ARROW)
-                .setName(ChatColor.YELLOW + "Retour")
-                .toItemStack());
+            .setName(ChatColor.YELLOW + "Retour")
+            .toItemStack());
     }
 
     @Override
@@ -77,7 +70,7 @@ public class TeamEditorGui extends SkyDefenderGui {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getSlot();
 
-        if (slot == 14) { // Change Size
+        if (slot == 14) {
             int newSize = team.getMaxPlayer();
             if (event.getClick().isLeftClick()) {
                 newSize++;
@@ -86,7 +79,6 @@ public class TeamEditorGui extends SkyDefenderGui {
             }
             team.setMaxPlayer(newSize);
             updateInventory();
-            // Feedback
             player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1, 1);
         } else if (slot == 26) {
             new AdminTeamsGui(teamManager).open(player);
@@ -100,16 +92,16 @@ public class TeamEditorGui extends SkyDefenderGui {
             case LIGHT_PURPLE: return Material.MAGENTA_WOOL;
             case AQUA: return Material.LIGHT_BLUE_WOOL;
             case YELLOW: return Material.YELLOW_WOOL;
-            case GREEN: return Material.LIME_WOOL; // Green is usually dark green
-            case RED: // Red or Dark Red
-            case DARK_RED: return Material.RED_WOOL; // Pink? No red.
-            case DARK_GRAY: return Material.GRAY_WOOL; // Gray
+            case GREEN: return Material.LIME_WOOL;
+            case RED:
+            case DARK_RED: return Material.RED_WOOL;
+            case DARK_GRAY: return Material.GRAY_WOOL;
             case GRAY: return Material.LIGHT_GRAY_WOOL;
             case DARK_AQUA: return Material.CYAN_WOOL;
             case DARK_PURPLE: return Material.PURPLE_WOOL;
             case DARK_BLUE: 
             case BLUE: return Material.BLUE_WOOL;
-            case DARK_GREEN: return Material.GREEN_WOOL; // Dark green
+            case DARK_GREEN: return Material.GREEN_WOOL;
             case BLACK: return Material.BLACK_WOOL;
             default: return Material.WHITE_WOOL;
         }

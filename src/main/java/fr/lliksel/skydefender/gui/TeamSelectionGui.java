@@ -36,10 +36,12 @@ public class TeamSelectionGui extends SkyDefenderGui {
         for (GameTeam team : teamManager.getTeams()) {
             Material woolType = getWoolColor(team.getColor());
             
+            String maxPlayersStr = team.getName().equalsIgnoreCase("Spectateur") ? "Illimité" : String.valueOf(team.getMaxPlayer());
+            
             ItemStack item = new ItemBuilder(woolType)
                     .setName(team.getColor() + team.getName())
                     .setLore(
-                            ChatColor.GRAY + "Joueurs: " + ChatColor.YELLOW + team.getPlayers().size() + "/" + team.getMaxPlayer(),
+                            ChatColor.GRAY + "Joueurs: " + ChatColor.YELLOW + team.getPlayers().size() + "/" + maxPlayersStr,
                             "",
                             ChatColor.GREEN + ">> Clique pour rejoindre"
                     )
