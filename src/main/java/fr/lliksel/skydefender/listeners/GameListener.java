@@ -78,9 +78,6 @@ public class GameListener implements Listener {
     public void onItemInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
 
-        // Prevent default item actions (e.g., consuming Ender Eye, opening map with compass)
-        event.setCancelled(true);
-
         Player player = event.getPlayer();
         org.bukkit.inventory.ItemStack item = event.getItem();
 
@@ -89,8 +86,10 @@ public class GameListener implements Listener {
         String displayName = item.getItemMeta().getDisplayName();
 
         if (item.getType() == Material.COMPASS && displayName.contains("Choisir une équipe")) {
+            event.setCancelled(true); // On annule seulement pour cet item
             new fr.lliksel.skydefender.gui.TeamSelectionGui(teamManager).open(player);
         } else if (item.getType() == Material.ENDER_EYE && displayName.contains("Admin Config")) {
+            event.setCancelled(true); // On annule seulement pour cet item
             if (player.isOp()) {
                 new fr.lliksel.skydefender.gui.AdminConfigGui(teamManager).open(player);
             } else {

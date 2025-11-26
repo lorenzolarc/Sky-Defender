@@ -30,26 +30,26 @@ public class AdminConfigGui extends SkyDefenderGui {
             inventory.setItem(i, glass);
         }
 
-        // Catégorie 1: Paramètres équipes
         ItemStack teamSettings = new ItemBuilder(Material.WHITE_BANNER)
-                .setName(ChatColor.GOLD + "Paramètres équipes")
-                .setLore(ChatColor.GRAY + "Gérer les équipes, les tailles", ChatColor.GRAY + "et les joueurs.")
-                .toItemStack();
+            .setName(ChatColor.GOLD + "Paramètres équipes")
+            .setLore(ChatColor.GRAY + "Gérer les équipes, les tailles", ChatColor.GRAY + "et les joueurs.")
+            .toItemStack();
 
         inventory.setItem(11, teamSettings);
 
-        // Catégorie 2: Paramètres de la partie
+
         ItemStack gameSettings = new ItemBuilder(Material.COMPARATOR)
-                .setName(ChatColor.GOLD + "Paramètres de la partie")
-                .setLore(ChatColor.GRAY + "Taille map, temps PvP, etc.")
-                .toItemStack();
+            .setName(ChatColor.GOLD + "Paramètres de la partie")
+            .setLore(ChatColor.GRAY + "Taille map, temps PvP, etc.")
+            .toItemStack();
         inventory.setItem(13, gameSettings);
 
-        // Placeholder Catégorie 3
-        ItemStack cat3 = new ItemBuilder(Material.BARRIER)
-                .setName(ChatColor.RED + "À venir (Inventaires)")
-                .toItemStack();
-        inventory.setItem(15, cat3);
+
+        ItemStack scenariosItem = new ItemBuilder(Material.BOOK)
+            .setName(ChatColor.GOLD + "Scénarios")
+            .setLore(ChatColor.GRAY + "Activer/Désactiver les modules", ChatColor.GRAY + "(CutClean, NoFall, etc.)")
+            .toItemStack();
+        inventory.setItem(15, scenariosItem);
     }
 
     @Override
@@ -73,6 +73,9 @@ public class AdminConfigGui extends SkyDefenderGui {
         } else if (slot == 13) {
             GameConfigManager gameConfig = JavaPlugin.getPlugin(SkyDefender.class).getGameConfigManager();
             new GameSettingsGui(teamManager, gameConfig).open(player);
+        } else if (slot == 15) {
+             fr.lliksel.skydefender.manager.ScenarioManager scenarioManager = JavaPlugin.getPlugin(SkyDefender.class).getScenarioManager();
+             new ScenarioGui(scenarioManager).open(player);
         }
     }
 }

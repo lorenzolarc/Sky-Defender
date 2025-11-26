@@ -30,11 +30,11 @@ public class ScoreboardManager {
         new org.bukkit.scheduler.BukkitRunnable() {
             @Override
             public void run() {
-                if (!gameManager.isState(GameState.PLAYING)) return;
+            if (!gameManager.isState(GameState.PLAYING)) return;
 
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    updateScoreboard(player);
-                }
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                updateScoreboard(player);
+            }
             }
         }.runTaskTimer(plugin, 0L, 20L);
     }

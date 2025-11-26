@@ -262,8 +262,7 @@ public class TeamManager {
         if (getAttackerTeamsCount() <= 1) return false;
 
         GameTeam team = teamOpt.get();
-        
-        // Kick players
+
         for (UUID uuid : new ArrayList<>(team.getPlayers())) {
             Player p = Bukkit.getPlayer(uuid);
             if (p != null) {

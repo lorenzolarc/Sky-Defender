@@ -12,9 +12,9 @@ import fr.lliksel.skydefender.manager.GameConfigManager;
 import fr.lliksel.skydefender.manager.GameManager;
 import fr.lliksel.skydefender.manager.ScoreboardManager;
 import fr.lliksel.skydefender.manager.TeamManager;
+import fr.lliksel.skydefender.manager.ScenarioManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Difficulty;
-import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,47 +25,40 @@ public class SkyDefender extends JavaPlugin {
     private ScoreboardManager scoreboardManager;
     private GameConfigManager gameConfigManager;
     private ChatInputManager chatInputManager;
+    private ScenarioManager scenarioManager;
 
     @Override
     public void onEnable() {
-        // 0. Config
         ConfigManager configManager = new ConfigManager(this);
         configManager.loadConfig();
 
-        // 1. Initialisation des managers
         this.chatInputManager = new ChatInputManager(this);
         this.gameConfigManager = new GameConfigManager(configManager);
         this.teamManager = new TeamManager(configManager); // Uses getPlugin inside
+        this.scenarioManager = new ScenarioManager(this);
         this.gameManager = new GameManager(this, this.teamManager, configManager, this.gameConfigManager);
         this.scoreboardManager = new ScoreboardManager(this, this.gameManager, this.teamManager);
 
-        // Création des équipes par défaut
         teamManager.createTeam("Defenseurs", ChatColor.BLUE, 5);
         teamManager.createTeam("Spectateur", ChatColor.GRAY, Integer.MAX_VALUE);
         teamManager.createTeam("Rouge", ChatColor.RED, 3);
 
-        // 2. Message dans la console
         getLogger().info(ChatColor.GREEN + " ========================================");
         getLogger().info(ChatColor.GREEN + " Sky Defender (Test Build) est chargé ! (v 0.1)");
         getLogger().info(ChatColor.GREEN + " ========================================");
         getLogger().warning(ChatColor.RED + " Ce plugin est actuellement en développement, il peut contenir des bugs et des fonctionnalités manquantes.");
 
-        // 3. Enregistrement des événements (Listeners)
         getServer().getPluginManager().registerEvents(new GameListener(this, configManager), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this.teamManager), this);
         getServer().getPluginManager().registerEvents(new MenuListener(), this);
 
-        // 4. Enregistrement des commandes
         getCommand("sd").setExecutor(new CommandSd(this, this.gameManager, configManager));
 
-        // 5. Configuration du monde (Lobby)
         for (World world : this.getServer().getWorlds()) {
             world.setPVP(false);
             world.setDifficulty(Difficulty.PEACEFUL);
-            world.setGameRule(GameRule.KEEP_INVENTORY, true);
         }
-        
-        // 6. Lancement des tâches
+
         this.scoreboardManager.startScoreboardTask();
     }
 
@@ -88,5 +81,9 @@ public class SkyDefender extends JavaPlugin {
 
     public ChatInputManager getChatInputManager() {
         return chatInputManager;
+    }
+
+    public ScenarioManager getScenarioManager() {
+        return scenarioManager;
     }
 }
