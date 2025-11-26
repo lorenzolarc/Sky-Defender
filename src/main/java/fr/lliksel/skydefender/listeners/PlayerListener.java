@@ -31,5 +31,13 @@ public class PlayerListener implements Listener {
                 .setLore("§7Faites un clic droit", "§7pour choisir votre équipe.")
                 .toItemStack();
         player.getInventory().setItem(4, compass);
+
+        if (player.isOp()) {
+            ItemStack adminItem = new ItemBuilder(Material.ENDER_EYE)
+                .setName("§c§lAdmin Config")
+                .setLore("§7Gérer la partie et les équipes.")
+                .toItemStack();
+            player.getInventory().setItem(8, adminItem);
+        }
     }
 }

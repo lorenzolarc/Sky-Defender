@@ -75,16 +75,41 @@ public class GameListener implements Listener {
     }
 
     @EventHandler
-    public void onCompassInteract(PlayerInteractEvent event) {
+    public void onItemInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        // Prevent default item actions (e.g., consuming Ender Eye, opening map with compass)
+        event.setCancelled(true);
 
         Player player = event.getPlayer();
         org.bukkit.inventory.ItemStack item = event.getItem();
 
-        if (item == null || item.getType() != Material.COMPASS) return;
-        if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !item.getItemMeta().getDisplayName().contains("Choisir une équipe")) return;
+        if (item == null || !item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return;
+        
+        String displayName = item.getItemMeta().getDisplayName();
 
-        new fr.lliksel.skydefender.gui.TeamSelectionGui(teamManager).open(player);
+        if (item.getType() == Material.COMPASS && displayName.contains("Choisir une équipe")) {
+            new fr.lliksel.skydefender.gui.TeamSelectionGui(teamManager).open(player);
+        } else if (item.getType() == Material.ENDER_EYE && displayName.contains("Admin Config")) {
+            if (player.isOp()) {
+                new fr.lliksel.skydefender.gui.AdminConfigGui(teamManager).open(player);
+            } else {
+                player.sendMessage(ChatColor.RED + "Vous n'avez pas la permission.");
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDropItem(org.bukkit.event.player.PlayerDropItemEvent event) {
+        org.bukkit.inventory.ItemStack droppedItem = event.getItemDrop().getItemStack();
+        if (droppedItem == null || !droppedItem.hasItemMeta() || !droppedItem.getItemMeta().hasDisplayName()) return;
+
+        String displayName = droppedItem.getItemMeta().getDisplayName();
+        if ((droppedItem.getType() == Material.COMPASS && displayName.contains("Choisir une équipe")) ||
+            (droppedItem.getType() == Material.ENDER_EYE && displayName.contains("Admin Config"))) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "Vous ne pouvez pas jeter cet item !");
+        }
     }
     
     private boolean locationsAreEqual(Location loc1, Location loc2) {

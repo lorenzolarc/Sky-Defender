@@ -11,7 +11,7 @@ import java.util.UUID;
 public class GameTeam {
     private final String name;
     private final ChatColor color;
-    private final Integer maxPlayer;
+    private Integer maxPlayer;
     private List<UUID> players;
     private Location spawnLocation;
 
@@ -32,6 +32,10 @@ public class GameTeam {
 
     public Integer getMaxPlayer() {
         return this.maxPlayer;
+    }
+
+    public void setMaxPlayer(Integer maxPlayer) {
+        this.maxPlayer = maxPlayer;
     }
 
     public Location getSpawnLocation() {
