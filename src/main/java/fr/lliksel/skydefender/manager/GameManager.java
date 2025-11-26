@@ -16,15 +16,17 @@ public class GameManager {
     private final SkyDefender plugin;
     private final TeamManager team;
     private final ConfigManager configManager;
+    private final GameConfigManager gameConfigManager;
     private GameState gameState;
     private Location bannerLocation;
     private final Map<UUID, Integer> kills = new HashMap<>();
     private long gameStartTime;
 
-    public GameManager(SkyDefender plugin, TeamManager team, ConfigManager configManager) {
+    public GameManager(SkyDefender plugin, TeamManager team, ConfigManager configManager, GameConfigManager gameConfigManager) {
         this.plugin = plugin;
         this.team = team;
         this.configManager = configManager;
+        this.gameConfigManager = gameConfigManager;
         this.gameState = GameState.WAITING;
         this.bannerLocation = configManager.getLocation("locations.banner");
     }
@@ -94,6 +96,26 @@ public class GameManager {
                 this.gameStartTime = System.currentTimeMillis();
                 Bukkit.broadcastMessage(ChatColor.GREEN + "[Sky Defender] La partie commence ! Bonne chance.");
                 startGameLogic();
+                
+                // PvP Timer
+                int pvpTime = gameConfigManager.getPvpTimeMinutes();
+                if (pvpTime > 0) {
+                    Bukkit.broadcastMessage(ChatColor.GOLD + "Le PvP sera activé dans " + pvpTime + " minutes.");
+                    for (World world : Bukkit.getWorlds()) world.setPVP(false);
+                    
+                    new org.bukkit.scheduler.BukkitRunnable() {
+                        @Override
+                        public void run() {
+                             if (isState(GameState.PLAYING)) {
+                                 for (World world : Bukkit.getWorlds()) world.setPVP(true);
+                                 Bukkit.broadcastMessage(ChatColor.RED + "Le PvP est maintenant ACTIF !");
+                             }
+                        }
+                    }.runTaskLater(plugin, pvpTime * 60 * 20L);
+                } else {
+                    for (World world : Bukkit.getWorlds()) world.setPVP(true);
+                    Bukkit.broadcastMessage(ChatColor.RED + "Le PvP est ACTIF !");
+                }
                 break;
 
             case FINISH:
@@ -116,8 +138,9 @@ public class GameManager {
     }
 
     private void startGameLogic() {
+        gameConfigManager.updateWorldBorder();
+        
         for (World world : this.plugin.getServer().getWorlds()) {
-            world.setPVP(true);
             world.setTime(0);
             world.setDifficulty(Difficulty.NORMAL);
         }
@@ -127,10 +150,29 @@ public class GameManager {
             player.getInventory().clear();
             
             java.util.Optional<fr.lliksel.skydefender.model.GameTeam> teamOpt = team.getPlayerTeam(player);
-            if (teamOpt.isPresent() && teamOpt.get().getName().equalsIgnoreCase("Spectateur")) {
-                player.setGameMode(GameMode.SPECTATOR);
+            if (teamOpt.isPresent()) {
+                fr.lliksel.skydefender.model.GameTeam gameTeam = teamOpt.get();
+                if (gameTeam.getName().equalsIgnoreCase("Spectateur")) {
+                    player.setGameMode(GameMode.SPECTATOR);
+                } else {
+                    player.setGameMode(GameMode.SURVIVAL);
+                    
+                    // Give Kit
+                    org.bukkit.inventory.ItemStack[] kit;
+                    if (gameTeam.getName().equalsIgnoreCase("Defenseurs")) {
+                        kit = gameConfigManager.getKit("Defenseurs");
+                    } else {
+                         // Assume everyone else is Attacker
+                        kit = gameConfigManager.getKit("Attaquants");
+                    }
+                    
+                    if (kit != null && kit.length > 0) {
+                        player.getInventory().setContents(kit);
+                    }
+                }
             } else {
-                player.setGameMode(GameMode.SURVIVAL);
+                // No team? Spectator default
+                player.setGameMode(GameMode.SPECTATOR);
             }
         }
         if (!this.team.teleportPlayers()) {

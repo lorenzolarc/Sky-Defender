@@ -64,12 +64,15 @@ public class ScoreboardManager {
         
         setScore(objective, "  ", 11);
         setScore(objective, ChatColor.YELLOW + "Joueurs: " + ChatColor.WHITE + getPlayersCount(), 10);
-        setScore(objective, ChatColor.YELLOW + "Kills: " + ChatColor.WHITE + gameManager.getKills(player), 9);
+        setScore(objective, ChatColor.BLUE + " > Déf: " + ChatColor.WHITE + teamManager.getDefenderCount(), 9);
+        setScore(objective, ChatColor.RED + " > Att: " + ChatColor.WHITE + teamManager.getAttackerCount(), 8);
         
-        setScore(objective, "   ", 8);
-        setScore(objective, getBannerDistance(player), 7);
+        setScore(objective, ChatColor.YELLOW + "Kills: " + ChatColor.WHITE + gameManager.getKills(player), 7);
         
-        setScore(objective, ChatColor.GRAY + "-----------------", 6);
+        setScore(objective, "   ", 6);
+        setScore(objective, getBannerDistance(player), 5);
+        
+        setScore(objective, ChatColor.GRAY + "-----------------", 4);
     }
 
     private void setScore(Objective objective, String text, int score) {

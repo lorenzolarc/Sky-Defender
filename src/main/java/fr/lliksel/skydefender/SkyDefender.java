@@ -4,8 +4,11 @@ import fr.lliksel.skydefender.commands.CommandCreateTeam;
 import fr.lliksel.skydefender.commands.CommandJoinTeam;
 import fr.lliksel.skydefender.commands.CommandSd;
 import fr.lliksel.skydefender.listeners.GameListener;
+import fr.lliksel.skydefender.listeners.MenuListener;
 import fr.lliksel.skydefender.listeners.PlayerListener;
+import fr.lliksel.skydefender.manager.ChatInputManager;
 import fr.lliksel.skydefender.manager.ConfigManager;
+import fr.lliksel.skydefender.manager.GameConfigManager;
 import fr.lliksel.skydefender.manager.GameManager;
 import fr.lliksel.skydefender.manager.ScoreboardManager;
 import fr.lliksel.skydefender.manager.TeamManager;
@@ -19,7 +22,8 @@ public class SkyDefender extends JavaPlugin {
     private TeamManager teamManager;
     private GameManager gameManager;
     private ScoreboardManager scoreboardManager;
-    private fr.lliksel.skydefender.manager.ChatInputManager chatInputManager;
+    private GameConfigManager gameConfigManager;
+    private ChatInputManager chatInputManager;
 
     @Override
     public void onEnable() {
@@ -28,10 +32,12 @@ public class SkyDefender extends JavaPlugin {
         configManager.loadConfig();
 
         // 1. Initialisation des managers
-        this.chatInputManager = new fr.lliksel.skydefender.manager.ChatInputManager(this);
-        this.teamManager = new TeamManager(configManager);
-        this.gameManager = new GameManager(this, this.teamManager, configManager);
+        this.chatInputManager = new ChatInputManager(this);
+        this.gameConfigManager = new GameConfigManager(configManager);
+        this.teamManager = new TeamManager(configManager); // Uses getPlugin inside
+        this.gameManager = new GameManager(this, this.teamManager, configManager, this.gameConfigManager);
         this.scoreboardManager = new ScoreboardManager(this, this.gameManager, this.teamManager);
+
         // Création des équipes par défaut
         teamManager.createTeam("Defenseurs", ChatColor.BLUE, 5);
         teamManager.createTeam("Spectateur", ChatColor.GRAY, Integer.MAX_VALUE);
@@ -41,18 +47,17 @@ public class SkyDefender extends JavaPlugin {
         getLogger().info(ChatColor.GREEN + " ========================================");
         getLogger().info(ChatColor.GREEN + " Sky Defender (Test Build) est chargé ! (v 0.1)");
         getLogger().info(ChatColor.GREEN + " ========================================");
-        getLogger().warning(ChatColor.RED + " Ce plugin est actuellement en développement, il peut contenir des bugs et des fonctionnalités manquantes. Referez vous au depot pour plus d'information: https://github.com/lorenzolarc/Sky-Defender");
+        getLogger().warning(ChatColor.RED + " Ce plugin est actuellement en développement, il peut contenir des bugs et des fonctionnalités manquantes.");
 
         // 3. Enregistrement des événements (Listeners)
         getServer().getPluginManager().registerEvents(new GameListener(this, configManager), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this.teamManager), this);
-        getServer().getPluginManager().registerEvents(new fr.lliksel.skydefender.listeners.MenuListener(), this);
+        getServer().getPluginManager().registerEvents(new MenuListener(), this);
 
         // 4. Enregistrement des commandes
         getCommand("sd").setExecutor(new CommandSd(this, this.gameManager, configManager));
-
-        // commandes temporaires en attendant le GUI qui permet de créer/rejoindre des teams
         getCommand("createteam").setExecutor(new CommandCreateTeam(this.teamManager));
+        getCommand("jointeam").setExecutor(new CommandJoinTeam(this.teamManager));
 
         // 5. Configuration du monde (Lobby)
         for (World world : this.getServer().getWorlds()) {
@@ -77,7 +82,11 @@ public class SkyDefender extends JavaPlugin {
         return gameManager;
     }
 
-    public fr.lliksel.skydefender.manager.ChatInputManager getChatInputManager() {
+    public GameConfigManager getGameConfigManager() {
+        return gameConfigManager;
+    }
+
+    public ChatInputManager getChatInputManager() {
         return chatInputManager;
     }
 }

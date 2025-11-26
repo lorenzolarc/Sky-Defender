@@ -1,5 +1,7 @@
 package fr.lliksel.skydefender.gui;
 
+import fr.lliksel.skydefender.SkyDefender;
+import fr.lliksel.skydefender.manager.GameConfigManager;
 import fr.lliksel.skydefender.manager.TeamManager;
 import fr.lliksel.skydefender.utils.ItemBuilder;
 import org.bukkit.Bukkit;
@@ -9,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.java.JavaPlugin;
 
 public class AdminConfigGui extends SkyDefenderGui {
 
@@ -35,15 +38,16 @@ public class AdminConfigGui extends SkyDefenderGui {
 
         inventory.setItem(11, teamSettings);
 
-        // Placeholder Catégorie 2
-        ItemStack cat2 = new ItemBuilder(Material.BARRIER)
-                .setName(ChatColor.RED + "À venir")
+        // Catégorie 2: Paramètres de la partie
+        ItemStack gameSettings = new ItemBuilder(Material.COMPARATOR)
+                .setName(ChatColor.GOLD + "Paramètres de la partie")
+                .setLore(ChatColor.GRAY + "Taille map, temps PvP, etc.")
                 .toItemStack();
-        inventory.setItem(13, cat2);
+        inventory.setItem(13, gameSettings);
 
         // Placeholder Catégorie 3
         ItemStack cat3 = new ItemBuilder(Material.BARRIER)
-                .setName(ChatColor.RED + "À venir")
+                .setName(ChatColor.RED + "À venir (Inventaires)")
                 .toItemStack();
         inventory.setItem(15, cat3);
     }
@@ -62,9 +66,13 @@ public class AdminConfigGui extends SkyDefenderGui {
         event.setCancelled(true);
         if (!(event.getWhoClicked() instanceof Player)) return;
         Player player = (Player) event.getWhoClicked();
+        int slot = event.getSlot();
 
-        if (event.getSlot() == 11) {
+        if (slot == 11) {
             new AdminTeamsGui(teamManager).open(player);
+        } else if (slot == 13) {
+            GameConfigManager gameConfig = JavaPlugin.getPlugin(SkyDefender.class).getGameConfigManager();
+            new GameSettingsGui(teamManager, gameConfig).open(player);
         }
     }
 }

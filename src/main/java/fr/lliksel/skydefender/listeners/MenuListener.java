@@ -5,6 +5,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
+import org.bukkit.event.inventory.InventoryCloseEvent;
+
 public class MenuListener implements Listener {
 
     @EventHandler
@@ -12,6 +14,14 @@ public class MenuListener implements Listener {
         if (event.getInventory().getHolder() instanceof SkyDefenderGui) {
             SkyDefenderGui gui = (SkyDefenderGui) event.getInventory().getHolder();
             gui.onInventoryClick(event);
+        }
+    }
+
+    @EventHandler
+    public void onClose(InventoryCloseEvent event) {
+        if (event.getInventory().getHolder() instanceof SkyDefenderGui) {
+            SkyDefenderGui gui = (SkyDefenderGui) event.getInventory().getHolder();
+            gui.onInventoryClose(event);
         }
     }
 }

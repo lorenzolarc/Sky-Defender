@@ -1,5 +1,6 @@
 package fr.lliksel.skydefender.manager;
 
+import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.model.GameTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import java.util.Random;
 
 public class TeamManager {
     private final ConfigManager configManager;
+    private final GameConfigManager gameConfigManager;
     private final List<GameTeam> teams;
     private final Scoreboard scoreboard;
     private final Random random = new Random();
@@ -27,8 +30,17 @@ public class TeamManager {
 
     public TeamManager(ConfigManager configManager) {
         this.configManager = configManager;
+        this.gameConfigManager = JavaPlugin.getPlugin(SkyDefender.class).getGameConfigManager();
         this.teams = new ArrayList<>();
         this.scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
+    }
+    
+    // Constructor for dependency injection if needed
+    public TeamManager(ConfigManager configManager, GameConfigManager gameConfigManager) {
+         this.configManager = configManager;
+         this.gameConfigManager = gameConfigManager;
+         this.teams = new ArrayList<>();
+         this.scoreboard = Bukkit.getScoreboardManager().getMainScoreboard();
     }
 
     public void applyTeamsToScoreboard(Scoreboard sb) {
@@ -69,8 +81,6 @@ public class TeamManager {
         }
 
         scoreboardTeam.setColor(color);
-        // scoreboardTeam.setPrefix("[" + name + "] ");
-
         scoreboardTeam.setNameTagVisibility(NameTagVisibility.ALWAYS);
 
         GameTeam newTeam = new GameTeam(name, color, maxPlayers);
@@ -164,8 +174,9 @@ public class TeamManager {
     }
 
     public boolean teleportPlayers() {
-        int min = configManager.getConfig().getInt("game.random_tp.min", -500);
-        int max = configManager.getConfig().getInt("game.random_tp.max", 500);
+        int spread = gameConfigManager.getTeleportSpread();
+        int min = -spread;
+        int max = spread;
 
         World world = Bukkit.getWorld("world");
         if (world == null) {
@@ -224,6 +235,13 @@ public class TeamManager {
             .mapToInt(t -> t.getPlayers().size())
             .sum();
     }
+    
+    public int getDefenderCount() {
+        return teams.stream()
+            .filter(t -> t.getName().equalsIgnoreCase("Defenseurs"))
+            .mapToInt(t -> t.getPlayers().size())
+            .sum();
+    }
 
     public int getAttackerTeamsCount() {
         return (int) teams.stream()
@@ -245,7 +263,7 @@ public class TeamManager {
 
         GameTeam team = teamOpt.get();
         
-        // Kick players or move to spectators
+        // Kick players
         for (UUID uuid : new ArrayList<>(team.getPlayers())) {
             Player p = Bukkit.getPlayer(uuid);
             if (p != null) {
