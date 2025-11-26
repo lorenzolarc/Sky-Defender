@@ -39,8 +39,7 @@ public class TeamManager {
             }
             t.setColor(gameTeam.getColor());
             t.setNameTagVisibility(NameTagVisibility.ALWAYS);
-            
-            // Add players to the team on this specific scoreboard
+
             for (UUID uuid : gameTeam.getPlayers()) {
                 Player p = Bukkit.getPlayer(uuid);
                 if (p != null) {
@@ -54,6 +53,10 @@ public class TeamManager {
         return teams.stream()
             .filter(team -> team.getName().equalsIgnoreCase(name))
             .findFirst();
+    }
+
+    public List<GameTeam> getTeams() {
+        return new ArrayList<>(teams);
     }
 
     public boolean createTeam(String name, ChatColor color, int maxPlayers) {
@@ -71,8 +74,7 @@ public class TeamManager {
         scoreboardTeam.setNameTagVisibility(NameTagVisibility.ALWAYS);
 
         GameTeam newTeam = new GameTeam(name, color, maxPlayers);
-        
-        // Load spawn from config if Defenseurs
+
         if (name.equalsIgnoreCase("Defenseurs")) {
             Location loc = configManager.getLocation("locations.defenseurs_spawn");
             if (loc != null) {
@@ -154,10 +156,9 @@ public class TeamManager {
             player.setDisplayName(newName);
             player.setPlayerListName(newName);
         } else {
-            // Reset
             player.setDisplayName(player.getName());
             player.setPlayerListName(player.getName());
-            // On remet le scoreboard par défaut pour être propre
+
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
         }
     }
@@ -212,15 +213,15 @@ public class TeamManager {
 
     public int getAlivePlayersCount() {
         return teams.stream()
-                .filter(t -> !t.getName().equalsIgnoreCase("Spectateur"))
-                .mapToInt(t -> t.getPlayers().size())
-                .sum();
+            .filter(t -> !t.getName().equalsIgnoreCase("Spectateur"))
+            .mapToInt(t -> t.getPlayers().size())
+            .sum();
     }
 
     public int getAttackerCount() {
         return teams.stream()
-                .filter(t -> !t.getName().equalsIgnoreCase("Spectateur") && !t.getName().equalsIgnoreCase("Defenseurs"))
-                .mapToInt(t -> t.getPlayers().size())
-                .sum();
+            .filter(t -> !t.getName().equalsIgnoreCase("Spectateur") && !t.getName().equalsIgnoreCase("Defenseurs"))
+            .mapToInt(t -> t.getPlayers().size())
+            .sum();
     }
 }

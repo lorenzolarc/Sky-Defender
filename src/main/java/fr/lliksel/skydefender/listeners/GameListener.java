@@ -1,4 +1,4 @@
-package fr.lliksel.skydefender.listeners; // Correction du package, la bonne orthographe est 'listeners' et non 'listerners'
+package fr.lliksel.skydefender.listeners;
 
 import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.manager.GameManager;
@@ -41,7 +41,7 @@ public class GameListener implements Listener {
     }
 
     @EventHandler
-    public void onInteract(PlayerInteractEvent event) {
+    public void onPressurePlateInteract(PlayerInteractEvent event) {
         if (event.getAction() != Action.PHYSICAL) return;
         if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.LIGHT_WEIGHTED_PRESSURE_PLATE) return;
 
@@ -59,11 +59,6 @@ public class GameListener implements Listener {
         Location highLoc = configManager.getLocation("locations.tp_plate.high");
         Location lowLoc = configManager.getLocation("locations.tp_plate.low");
 
-        // Note: Location.equals checks exact coordinates including pitch/yaw, but block location usually has 0 pitch/yaw
-        // However, configManager.getLocation returns saved loc which might have pitch/yaw if saved from player looking at block?
-        // No, in CommandSd we saved targetBlock.getLocation() which is block aligned.
-        // So comparison should work.
-
         if (highLoc != null && locationsAreEqual(clickedLoc, highLoc)) {
             if (lowLoc != null) {
                 player.teleport(lowLoc.clone().add(0.5, 0, 0.5)); // Teleport on the plate
@@ -77,6 +72,19 @@ public class GameListener implements Listener {
                 tpCooldowns.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
             }
         }
+    }
+
+    @EventHandler
+    public void onCompassInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+
+        Player player = event.getPlayer();
+        org.bukkit.inventory.ItemStack item = event.getItem();
+
+        if (item == null || item.getType() != Material.COMPASS) return;
+        if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName() || !item.getItemMeta().getDisplayName().contains("Choisir une équipe")) return;
+
+        new fr.lliksel.skydefender.gui.TeamSelectionGui(teamManager).open(player);
     }
     
     private boolean locationsAreEqual(Location loc1, Location loc2) {

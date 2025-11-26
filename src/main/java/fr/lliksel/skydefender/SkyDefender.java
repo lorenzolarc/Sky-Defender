@@ -36,19 +36,21 @@ public class SkyDefender extends JavaPlugin {
         teamManager.createTeam("Rouge", ChatColor.RED, 3);
 
         // 2. Message dans la console
-        getLogger().info(ChatColor.GREEN + "========================================");
-        getLogger().info(ChatColor.GREEN + "SkyDefender (Test Build) est chargé ! (v 0.1)");
-        getLogger().info(ChatColor.GREEN + "========================================");
-        getLogger().warning(ChatColor.RED + "Ce plugin est actuellement en développement, il peut contenir des bugs et des fonctionnalités manquantes. Referez vous au depot pour plus d'information: https://github.com/lorenzolarc/Sky-Defender");
+        getLogger().info(ChatColor.GREEN + " ========================================");
+        getLogger().info(ChatColor.GREEN + " Sky Defender (Test Build) est chargé ! (v 0.1)");
+        getLogger().info(ChatColor.GREEN + " ========================================");
+        getLogger().warning(ChatColor.RED + " Ce plugin est actuellement en développement, il peut contenir des bugs et des fonctionnalités manquantes. Referez vous au depot pour plus d'information: https://github.com/lorenzolarc/Sky-Defender");
 
         // 3. Enregistrement des événements (Listeners)
         getServer().getPluginManager().registerEvents(new GameListener(this, configManager), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this.teamManager), this);
+        getServer().getPluginManager().registerEvents(new fr.lliksel.skydefender.listeners.MenuListener(), this);
 
         // 4. Enregistrement des commandes
         getCommand("sd").setExecutor(new CommandSd(this, this.gameManager, configManager));
+
+        // commandes temporaires en attendant le GUI qui permet de créer/rejoindre des teams
         getCommand("createteam").setExecutor(new CommandCreateTeam(this.teamManager));
-        getCommand("jointeam").setExecutor(new CommandJoinTeam(this.teamManager));
 
         // 5. Configuration du monde (Lobby)
         for (World world : this.getServer().getWorlds()) {
