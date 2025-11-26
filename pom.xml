@@ -6,10 +6,9 @@
 
     <groupId>fr.lliksel</groupId>
     <artifactId>skydefender</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0</version>
 
     <properties>
-        <!-- C'est LA ligne magique : elle permet d'utiliser Java 25 pour compiler vers Java 8 -->
         <maven.compiler.release>8</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
