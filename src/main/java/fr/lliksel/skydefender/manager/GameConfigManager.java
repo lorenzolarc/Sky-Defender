@@ -13,9 +13,11 @@ public class GameConfigManager {
 
     private final ConfigManager configManager;
 
+    // Settings with default values
     private int mapSize = 1000;
     private int teleportSpread = 500;
     private int pvpTimeMinutes = 20;
+    private boolean uhcMode = false;
     
     public GameConfigManager(ConfigManager configManager) {
         this.configManager = configManager;
@@ -27,6 +29,7 @@ public class GameConfigManager {
         this.mapSize = config.getInt("game_settings.map_size", 1000);
         this.teleportSpread = config.getInt("game_settings.teleport_spread", 500);
         this.pvpTimeMinutes = config.getInt("game_settings.pvp_time", 20);
+        this.uhcMode = config.getBoolean("game_settings.uhc_mode", false);
     }
 
     public void saveSettings() {
@@ -34,8 +37,12 @@ public class GameConfigManager {
         config.set("game_settings.map_size", mapSize);
         config.set("game_settings.teleport_spread", teleportSpread);
         config.set("game_settings.pvp_time", pvpTimeMinutes);
+        config.set("game_settings.uhc_mode", uhcMode);
         configManager.saveConfig();
     }
+
+    public boolean isUhcMode() { return uhcMode; }
+    public void setUhcMode(boolean uhcMode) { this.uhcMode = uhcMode; }
 
     public void setKit(String kitName, ItemStack[] items) {
         configManager.getConfig().set("kits." + kitName, java.util.Arrays.asList(items));

@@ -14,6 +14,7 @@ import fr.lliksel.skydefender.manager.ScoreboardManager;
 import fr.lliksel.skydefender.manager.TeamManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Difficulty;
+import org.bukkit.GameRule;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -56,13 +57,12 @@ public class SkyDefender extends JavaPlugin {
 
         // 4. Enregistrement des commandes
         getCommand("sd").setExecutor(new CommandSd(this, this.gameManager, configManager));
-        getCommand("createteam").setExecutor(new CommandCreateTeam(this.teamManager));
-        getCommand("jointeam").setExecutor(new CommandJoinTeam(this.teamManager));
 
         // 5. Configuration du monde (Lobby)
         for (World world : this.getServer().getWorlds()) {
             world.setPVP(false);
             world.setDifficulty(Difficulty.PEACEFUL);
+            world.setGameRule(GameRule.KEEP_INVENTORY, true);
         }
         
         // 6. Lancement des tâches

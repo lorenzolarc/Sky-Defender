@@ -139,10 +139,13 @@ public class GameManager {
 
     private void startGameLogic() {
         gameConfigManager.updateWorldBorder();
+        boolean uhcMode = gameConfigManager.isUhcMode();
         
         for (World world : this.plugin.getServer().getWorlds()) {
             world.setTime(0);
             world.setDifficulty(Difficulty.NORMAL);
+            world.setGameRule(GameRule.NATURAL_REGENERATION, !uhcMode);
+            world.setGameRule(GameRule.KEEP_INVENTORY, false);
         }
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.setHealth(20);
@@ -156,19 +159,15 @@ public class GameManager {
                     player.setGameMode(GameMode.SPECTATOR);
                 } else {
                     player.setGameMode(GameMode.SURVIVAL);
-                    
-                    // Give Kit
+
                     org.bukkit.inventory.ItemStack[] kit;
                     if (gameTeam.getName().equalsIgnoreCase("Defenseurs")) {
                         kit = gameConfigManager.getKit("Defenseurs");
                     } else {
-                         // Assume everyone else is Attacker
                         kit = gameConfigManager.getKit("Attaquants");
                     }
                     
                     if (kit != null && kit.length > 0) {
-                        // Fix: Adapter la taille du kit à l'inventaire du joueur (41 slots max)
-                        // Les slots 0-35 sont l'inventaire principal, 36-39 l'armure, 40 la main secondaire.
                         if (kit.length > 41) {
                             kit = java.util.Arrays.copyOf(kit, 41);
                         }
@@ -176,7 +175,6 @@ public class GameManager {
                     }
                 }
             } else {
-                // No team? Spectator default
                 player.setGameMode(GameMode.SPECTATOR);
             }
         }

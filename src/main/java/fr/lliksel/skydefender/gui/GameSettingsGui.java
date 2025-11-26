@@ -62,6 +62,18 @@ public class GameSettingsGui extends SkyDefenderGui {
                         ChatColor.GRAY + "Clic Droit: -1m"
                 )
                 .toItemStack());
+
+        // Mode UHC
+        boolean isUhc = gameConfigManager.isUhcMode();
+        inventory.setItem(16, new ItemBuilder(Material.GOLDEN_APPLE)
+                .setName(ChatColor.YELLOW + "Mode UHC")
+                .setLore(
+                        ChatColor.GRAY + "Régénération naturelle: " + (isUhc ? ChatColor.RED + "OFF" : ChatColor.GREEN + "ON"),
+                        "",
+                        ChatColor.GRAY + "État actuel: " + (isUhc ? ChatColor.GREEN + "ACTIVÉ" : ChatColor.RED + "DÉSACTIVÉ"),
+                        ChatColor.GRAY + "Cliquez pour changer"
+                )
+                .toItemStack());
                 
         // Kit Attaquants
         inventory.setItem(20, new ItemBuilder(Material.IRON_CHESTPLATE)
@@ -118,6 +130,11 @@ public class GameSettingsGui extends SkyDefenderGui {
             int change = event.getClick().isLeftClick() ? 1 : -1;
             int newVal = Math.max(0, current + change);
             gameConfigManager.setPvpTimeMinutes(newVal);
+            gameConfigManager.saveSettings();
+            player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1, 1);
+            updateInventory();
+        } else if (slot == 16) { // UHC Mode
+            gameConfigManager.setUhcMode(!gameConfigManager.isUhcMode());
             gameConfigManager.saveSettings();
             player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1, 1);
             updateInventory();
