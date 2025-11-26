@@ -8,11 +8,4 @@ description: Plugin Sky Defender pour la 1.16.5
 commands:
   sd:
     description: Commande principale du Sky Defender
-    usage: /sd <start|stop|config>
-  createteam:
-    description: Crée une nouvelle équipe.
-    usage: /createteam <nom> <couleur> <maxJoueurs>
-    permission: skydefender.admin
-  jointeam:
-    description: Rejoint une équipe.
-    usage: /jointeam <nom>
+    usage: /sd <start|banner|defenseur>
