@@ -85,7 +85,7 @@ public class ScoreboardManager {
     }
 
     private int getPlayersCount() {
-        return Bukkit.getOnlinePlayers().size();
+        return teamManager.getAlivePlayersCount();
     }
 
     private String getBannerDistance(Player player) {

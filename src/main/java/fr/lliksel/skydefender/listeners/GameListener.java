@@ -7,6 +7,7 @@ import fr.lliksel.skydefender.model.GameState;
 import fr.lliksel.skydefender.model.GameTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -67,10 +68,25 @@ public class GameListener implements Listener {
 
             event.setDeathMessage(null);
             this.teamManager.removePlayerFromTeamWhenDeath(player);
+            
+            // Mise en spectateur
+            this.teamManager.addPlayerToTeam(player, "Spectateur", true);
+            player.setGameMode(GameMode.SPECTATOR);
+
             Bukkit.broadcastMessage("[Sky Defender] " + player.getDisplayName() + " est mort.");
             player.getWorld().strikeLightningEffect(player.getLocation().subtract(0, -5, 0));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1);
+            }
+
+            // Vérification de la victoire des défenseurs
+            if (teamManager.getAttackerCount() == 0) {
+                Optional<GameTeam> defenders = teamManager.getTeamByName("Defenseurs");
+                if (defenders.isPresent() && !defenders.get().getPlayers().isEmpty()) {
+                    Bukkit.broadcastMessage(ChatColor.BLUE + "Les Défenseurs ont éliminé tous les attaquants !");
+                    Bukkit.broadcastMessage(ChatColor.BLUE + "Les Défenseurs remportent la victoire !");
+                    gameManager.setGameState(GameState.FINISH);
+                }
             }
         }
     }

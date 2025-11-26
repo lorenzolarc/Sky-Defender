@@ -35,20 +35,6 @@ public class CommandSd implements CommandExecutor {
             return true;
         }
 
-        if (args[0].equalsIgnoreCase("test")) {
-            if (sender instanceof Player) {
-                Player p = (Player) sender;
-                p.sendMessage(ChatColor.GREEN + "✔ Test réussi !");
-                p.sendMessage(ChatColor.GRAY + "Ton UUID est : " + p.getUniqueId());
-                p.sendMessage(ChatColor.GOLD + "Je te donne 5 niveaux d'XP pour fêter ça.");
-                p.giveExpLevels(5);
-                p.playSound(p.getLocation(), org.bukkit.Sound.ENTITY_PLAYER_LEVELUP, 1f, 1f);
-            } else {
-                sender.sendMessage("Seul un joueur peut tester cette commande.");
-            }
-            return true;
-        }
-
         if (args[0].equalsIgnoreCase("infos")) {
             sender.sendMessage(ChatColor.YELLOW + "Plugin version: " + plugin.getDescription().getVersion());
             sender.sendMessage(ChatColor.YELLOW + "Auteurs: " + plugin.getDescription().getAuthors());

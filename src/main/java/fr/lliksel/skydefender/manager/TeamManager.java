@@ -185,4 +185,18 @@ public class TeamManager {
     public Location getDeathLocation(Player player) {
         return deathLocations.get(player.getUniqueId());
     }
+
+    public int getAlivePlayersCount() {
+        return teams.stream()
+                .filter(t -> !t.getName().equalsIgnoreCase("Spectateur"))
+                .mapToInt(t -> t.getPlayers().size())
+                .sum();
+    }
+
+    public int getAttackerCount() {
+        return teams.stream()
+                .filter(t -> !t.getName().equalsIgnoreCase("Spectateur") && !t.getName().equalsIgnoreCase("Defenseurs"))
+                .mapToInt(t -> t.getPlayers().size())
+                .sum();
+    }
 }
