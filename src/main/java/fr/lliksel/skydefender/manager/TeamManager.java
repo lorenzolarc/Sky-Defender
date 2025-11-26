@@ -9,7 +9,9 @@ import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import org.bukkit.World;
@@ -19,6 +21,8 @@ public class TeamManager {
     private final List<GameTeam> teams;
     private final Scoreboard scoreboard;
     private final Random random = new Random();
+    private final Map<UUID, String> previousTeams = new HashMap<>();
+    private final Map<UUID, Location> deathLocations = new HashMap<>();
 
     public TeamManager() {
         this.teams = new ArrayList<>();
@@ -69,7 +73,7 @@ public class TeamManager {
         return true;
     }
 
-    public boolean addPlayerToTeam(Player player, String teamName) {
+    public boolean addPlayerToTeam(Player player, String teamName, boolean force) {
         Optional<GameTeam> teamOpt = getTeamByName(teamName);
         if (!teamOpt.isPresent()) {
             player.sendMessage(ChatColor.RED + "Cette équipe n'existe pas.");
@@ -78,7 +82,7 @@ public class TeamManager {
 
         GameTeam team = teamOpt.get();
 
-        if (team.getPlayers().size() >= team.getMaxPlayer()) {
+        if (!force && team.getPlayers().size() >= team.getMaxPlayer()) {
             player.sendMessage(ChatColor.RED + "Cette équipe est pleine.");
             return false;
         }
@@ -168,7 +172,17 @@ public class TeamManager {
 
     public void removePlayerFromTeamWhenDeath(Player player) {
         getPlayerTeam(player).ifPresent(team -> {
+            previousTeams.put(player.getUniqueId(), team.getName());
+            deathLocations.put(player.getUniqueId(), player.getLocation());
             team.removePlayer(player.getUniqueId());
         });
+    }
+
+    public String getPreviousTeam(Player player) {
+        return previousTeams.get(player.getUniqueId());
+    }
+
+    public Location getDeathLocation(Player player) {
+        return deathLocations.get(player.getUniqueId());
     }
 }

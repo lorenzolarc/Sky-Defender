@@ -30,7 +30,7 @@ public class CommandJoinTeam implements CommandExecutor {
         Player player = (Player) sender;
         String teamName = args[0];
 
-        teamManager.addPlayerToTeam(player, teamName);
+        teamManager.addPlayerToTeam(player, teamName, false);
         return true;
     }
 }

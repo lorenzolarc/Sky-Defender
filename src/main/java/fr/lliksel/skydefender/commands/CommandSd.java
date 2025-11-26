@@ -4,6 +4,11 @@ import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.manager.GameManager;
 import fr.lliksel.skydefender.model.GameState;
 import org.bukkit.ChatColor;
+import fr.lliksel.skydefender.manager.TeamManager;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,16 +20,18 @@ public class CommandSd implements CommandExecutor {
 
     private final SkyDefender plugin;
     private final GameManager gameManager;
+    private final TeamManager teamManager;
 
     public CommandSd(SkyDefender plugin, GameManager gameManager) {
         this.plugin = plugin;
         this.gameManager = gameManager;
+        this.teamManager = plugin.getTeamManager();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /sd <test|infos|start|banner>");
+            sender.sendMessage(ChatColor.RED + "Usage: /sd <test|infos|start|banner|revive>");
             return true;
         }
 
@@ -70,6 +77,49 @@ public class CommandSd implements CommandExecutor {
                 player.sendMessage(ChatColor.GREEN + "La bannière a été définie avec succès !");
             } else {
                 player.sendMessage(ChatColor.RED + "Vous devez regarder une bannière.");
+            }
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("revive")) {
+            if (args.length < 2) {
+                sender.sendMessage(ChatColor.RED + "Usage: /sd revive <joueur> [équipe]");
+                return true;
+            }
+
+            String playerName = args[1];
+            Player target = Bukkit.getPlayer(playerName);
+
+            if (target == null) {
+                sender.sendMessage(ChatColor.RED + "Le joueur " + playerName + " n'est pas connecté.");
+                return true;
+            }
+
+            String teamName;
+            if (args.length >= 3) {
+                teamName = args[2];
+            } else {
+                teamName = teamManager.getPreviousTeam(target);
+                if (teamName == null) {
+                    sender.sendMessage(ChatColor.RED + "Impossible de trouver l'ancienne équipe de " + target.getName() + ". Veuillez spécifier une équipe.");
+                    return true;
+                }
+            }
+
+            if (teamManager.addPlayerToTeam(target, teamName, true)) {
+                target.setGameMode(GameMode.SURVIVAL);
+                target.setHealth(20);
+                target.setFoodLevel(20);
+                target.getInventory().clear();
+                sender.sendMessage(ChatColor.GREEN + target.getName() + " a été ressuscité dans l'équipe " + teamName + " !");
+
+                Location deathLoc = teamManager.getDeathLocation(target);
+                if (deathLoc != null) {
+                    target.teleport(deathLoc);
+                    sender.sendMessage(ChatColor.GREEN + "Le joueur a été téléporté sur son lieu de mort.");
+                }
+            } else {
+                sender.sendMessage(ChatColor.RED + "L'équipe " + teamName + " n'existe pas.");
             }
             return true;
         }
