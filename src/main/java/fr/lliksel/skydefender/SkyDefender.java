@@ -15,21 +15,22 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SkyDefender extends JavaPlugin {
 
-    private TeamManager teamManager;
-    private GameManager gameManager;
-    private ScoreboardManager scoreboardManager;
-
-    @Override
-    public void onEnable() {
-        // 0. Config
-        ConfigManager configManager = new ConfigManager(this);
-        configManager.loadConfig();
-
-        // 1. Initialisation des managers
-        this.teamManager = new TeamManager(configManager);
-        this.gameManager = new GameManager(this, this.teamManager, configManager);
-        this.scoreboardManager = new ScoreboardManager(this, this.gameManager, this.teamManager);
-
+        private TeamManager teamManager;
+        private GameManager gameManager;
+        private ScoreboardManager scoreboardManager;
+        private fr.lliksel.skydefender.manager.ChatInputManager chatInputManager;
+    
+        @Override
+        public void onEnable() {
+            // 0. Config
+            ConfigManager configManager = new ConfigManager(this);
+            configManager.loadConfig();
+    
+            // 1. Initialisation des managers
+            this.chatInputManager = new fr.lliksel.skydefender.manager.ChatInputManager(this);
+            this.teamManager = new TeamManager(configManager);
+            this.gameManager = new GameManager(this, this.teamManager, configManager);
+            this.scoreboardManager = new ScoreboardManager(this, this.gameManager, this.teamManager);
         // Création des équipes par défaut
         teamManager.createTeam("Defenseurs", ChatColor.BLUE, 5);
         teamManager.createTeam("Spectateur", ChatColor.GRAY, Integer.MAX_VALUE);
@@ -72,5 +73,9 @@ public class SkyDefender extends JavaPlugin {
 
     public GameManager getGameManager() {
         return gameManager;
+    }
+
+    public fr.lliksel.skydefender.manager.ChatInputManager getChatInputManager() {
+        return chatInputManager;
     }
 }

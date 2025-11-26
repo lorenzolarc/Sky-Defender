@@ -224,4 +224,42 @@ public class TeamManager {
             .mapToInt(t -> t.getPlayers().size())
             .sum();
     }
+
+    public int getAttackerTeamsCount() {
+        return (int) teams.stream()
+            .filter(t -> !isSystemTeam(t.getName()))
+            .count();
+    }
+
+    public boolean isSystemTeam(String name) {
+        return name.equalsIgnoreCase("Defenseurs") || name.equalsIgnoreCase("Spectateur");
+    }
+
+    public boolean deleteTeam(String name) {
+        if (isSystemTeam(name)) return false;
+
+        Optional<GameTeam> teamOpt = getTeamByName(name);
+        if (!teamOpt.isPresent()) return false;
+
+        if (getAttackerTeamsCount() <= 1) return false;
+
+        GameTeam team = teamOpt.get();
+        
+        // Kick players or move to spectators
+        for (UUID uuid : new ArrayList<>(team.getPlayers())) {
+            Player p = Bukkit.getPlayer(uuid);
+            if (p != null) {
+                addPlayerToTeam(p, "Spectateur", true);
+                p.sendMessage(ChatColor.RED + "Votre équipe a été supprimée.");
+            }
+        }
+
+        org.bukkit.scoreboard.Team scoreboardTeam = scoreboard.getTeam(team.getName());
+        if (scoreboardTeam != null) {
+            scoreboardTeam.unregister();
+        }
+
+        this.teams.remove(team);
+        return true;
+    }
 }

@@ -39,6 +39,12 @@ public class AdminTeamsGui extends SkyDefenderGui {
         ItemStack back = new ItemBuilder(Material.ARROW).setName(ChatColor.YELLOW + "Retour").toItemStack();
         inventory.setItem(49, back);
 
+        // Global Attacker Size
+        inventory.setItem(0, new ItemBuilder(Material.IRON_SWORD)
+            .setName(ChatColor.RED + "Taille Attaquants (Global)")
+            .setLore(ChatColor.GRAY + "Change la taille de TOUTES", ChatColor.GRAY + "les équipes d'attaquants.", "", ChatColor.YELLOW + "Clic Gauche: +1", ChatColor.YELLOW + "Clic Droit: -1")
+            .toItemStack());
+
         // Bouton Créer une team
         ItemStack create = new ItemBuilder(Material.STICK)
                 .setName(ChatColor.GREEN + "Créer une équipe")
@@ -89,22 +95,51 @@ public class AdminTeamsGui extends SkyDefenderGui {
             return;
         }
 
+        if (slot == 0) { // Global Attacker Size
+            int change = event.getClick().isLeftClick() ? 1 : -1;
+            
+            boolean changed = false;
+            for (GameTeam t : teamManager.getTeams()) {
+                if (!teamManager.isSystemTeam(t.getName())) {
+                    int newSize = t.getMaxPlayer() + change;
+                    if (newSize > 0) {
+                         t.setMaxPlayer(newSize);
+                         changed = true;
+                    }
+                }
+            }
+            
+            if (changed) {
+                player.playSound(player.getLocation(), org.bukkit.Sound.UI_BUTTON_CLICK, 1, 1);
+                new AdminTeamsGui(teamManager).open(player); // Refresh to show new sizes in lore if needed
+            }
+            return;
+        }
+
         if (slot == 4) { // Créer
-            player.closeInventory();
-            player.sendMessage(ChatColor.GOLD + "Pour créer une équipe, utilisez la commande: /createteam <nom> <couleur> <taille>");
-            // TODO: Faire un chat listener pour ça plus tard si demandé explicitement sans commande
+            new TeamCreatorGui(teamManager).open(player);
             return;
         }
 
         if (slotToTeamName.containsKey(slot)) {
             String teamName = slotToTeamName.get(slot);
+            
             if (event.getClick().isRightClick()) {
-                // Suppression (à implémenter dans TeamManager si nécessaire, pour l'instant juste un message)
-                 player.sendMessage(ChatColor.RED + "Fonction de suppression à venir.");
+                // Suppression
+                if (teamManager.deleteTeam(teamName)) {
+                    player.sendMessage(ChatColor.GREEN + "L'équipe " + teamName + " a été supprimée.");
+                    player.playSound(player.getLocation(), org.bukkit.Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+                    // Refresh
+                    new AdminTeamsGui(teamManager).open(player);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Impossible de supprimer cette équipe (Système ou dernière équipe attaquante).");
+                    player.playSound(player.getLocation(), org.bukkit.Sound.BLOCK_NOTE_BLOCK_BASS, 1, 1);
+                }
             } else {
-                // Ouverture du menu d'édition spécifique (à faire)
-                player.sendMessage(ChatColor.YELLOW + "Menu d'édition pour " + teamName + " à venir.");
-                // new TeamEditorGui(teamManager, teamName).open(player);
+                // Édition
+                teamManager.getTeamByName(teamName).ifPresent(team -> {
+                    new TeamEditorGui(teamManager, team).open(player);
+                });
             }
         }
     }
