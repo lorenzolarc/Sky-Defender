@@ -1,0 +1,6 @@
+game:
+  random_tp:
+    min: -500
+    max: 500
+
+locations:

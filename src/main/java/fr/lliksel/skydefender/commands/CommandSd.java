@@ -6,9 +6,11 @@ import fr.lliksel.skydefender.model.GameState;
 import fr.lliksel.skydefender.model.GameTeam;
 import org.bukkit.ChatColor;
 import fr.lliksel.skydefender.manager.TeamManager;
+import fr.lliksel.skydefender.manager.ConfigManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -22,17 +24,19 @@ public class CommandSd implements CommandExecutor {
     private final SkyDefender plugin;
     private final GameManager gameManager;
     private final TeamManager teamManager;
+    private final ConfigManager configManager;
 
-    public CommandSd(SkyDefender plugin, GameManager gameManager) {
+    public CommandSd(SkyDefender plugin, GameManager gameManager, ConfigManager configManager) {
         this.plugin = plugin;
         this.gameManager = gameManager;
         this.teamManager = plugin.getTeamManager();
+        this.configManager = configManager;
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /sd <infos|start|banner|defenseur|revive>");
+            sender.sendMessage(ChatColor.RED + "Usage: /sd <infos|start|banner|defenseur|tpplate|revive>");
             return true;
         }
 
@@ -78,9 +82,38 @@ public class CommandSd implements CommandExecutor {
 
             if (teamOpt.isPresent()) {
                 teamOpt.get().setSpawnLocation(player.getLocation());
+                configManager.setLocation("locations.defenseurs_spawn", player.getLocation());
                 player.sendMessage(ChatColor.GREEN + "Le point de spawn des défenseurs a été défini !");
             } else {
                 player.sendMessage(ChatColor.RED + "L'équipe Defenseurs n'existe pas.");
+            }
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("tpplate")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Seul un joueur peut définir les plaques.");
+                return true;
+            }
+            if (args.length < 2) {
+                sender.sendMessage(ChatColor.RED + "Usage: /sd tpplate <high|low>");
+                return true;
+            }
+
+            String type = args[1].toLowerCase();
+            if (!type.equals("high") && !type.equals("low")) {
+                sender.sendMessage(ChatColor.RED + "Type invalide. Utilisez 'high' ou 'low'.");
+                return true;
+            }
+
+            Player player = (Player) sender;
+            Block targetBlock = player.getTargetBlockExact(5);
+
+            if (targetBlock != null && targetBlock.getType() == Material.LIGHT_WEIGHTED_PRESSURE_PLATE) {
+                configManager.setLocation("locations.tp_plate." + type, targetBlock.getLocation());
+                player.sendMessage(ChatColor.GREEN + "La plaque de tp " + type + " a été définie !");
+            } else {
+                player.sendMessage(ChatColor.RED + "Vous devez regarder une plaque de pression en or (Light Weighted).");
             }
             return true;
         }

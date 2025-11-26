@@ -42,11 +42,11 @@ public class SkyDefender extends JavaPlugin {
         getLogger().warning(ChatColor.RED + "Ce plugin est actuellement en développement, il peut contenir des bugs et des fonctionnalités manquantes. Referez vous au depot pour plus d'information: https://github.com/lorenzolarc/Sky-Defender");
 
         // 3. Enregistrement des événements (Listeners)
-        getServer().getPluginManager().registerEvents(new GameListener(this), this);
+        getServer().getPluginManager().registerEvents(new GameListener(this, configManager), this);
         getServer().getPluginManager().registerEvents(new PlayerListener(this.teamManager), this);
 
         // 4. Enregistrement des commandes
-        getCommand("sd").setExecutor(new CommandSd(this, this.gameManager));
+        getCommand("sd").setExecutor(new CommandSd(this, this.gameManager, configManager));
         getCommand("createteam").setExecutor(new CommandCreateTeam(this.teamManager));
         getCommand("jointeam").setExecutor(new CommandJoinTeam(this.teamManager));
 

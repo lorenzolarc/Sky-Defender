@@ -3,30 +3,87 @@ package fr.lliksel.skydefender.listeners; // Correction du package, la bonne ort
 import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.manager.GameManager;
 import fr.lliksel.skydefender.manager.TeamManager;
+import fr.lliksel.skydefender.manager.ConfigManager;
 import fr.lliksel.skydefender.model.GameState;
 import fr.lliksel.skydefender.model.GameTeam;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public class GameListener implements Listener {
 
     private final SkyDefender plugin;
     private final GameManager gameManager;
     private final TeamManager teamManager;
+    private final ConfigManager configManager;
+    private final Map<UUID, Long> tpCooldowns = new HashMap<>();
 
-    public GameListener(SkyDefender plugin) {
+    public GameListener(SkyDefender plugin, ConfigManager configManager) {
         this.plugin = plugin;
         this.gameManager = plugin.getGameManager();
         this.teamManager = plugin.getTeamManager();
+        this.configManager = configManager;
+    }
+
+    @EventHandler
+    public void onInteract(PlayerInteractEvent event) {
+        if (event.getAction() != Action.PHYSICAL) return;
+        if (event.getClickedBlock() == null || event.getClickedBlock().getType() != Material.LIGHT_WEIGHTED_PRESSURE_PLATE) return;
+
+        Player player = event.getPlayer();
+
+        if (tpCooldowns.containsKey(player.getUniqueId()) && System.currentTimeMillis() < tpCooldowns.get(player.getUniqueId())) {
+            event.setCancelled(true); // Prevent further interaction if on cooldown
+            return;
+        }
+
+        Optional<GameTeam> teamOpt = teamManager.getPlayerTeam(player);
+        if (!teamOpt.isPresent() || !teamOpt.get().getName().equalsIgnoreCase("Defenseurs")) return;
+
+        Location clickedLoc = event.getClickedBlock().getLocation();
+        Location highLoc = configManager.getLocation("locations.tp_plate.high");
+        Location lowLoc = configManager.getLocation("locations.tp_plate.low");
+
+        // Note: Location.equals checks exact coordinates including pitch/yaw, but block location usually has 0 pitch/yaw
+        // However, configManager.getLocation returns saved loc which might have pitch/yaw if saved from player looking at block?
+        // No, in CommandSd we saved targetBlock.getLocation() which is block aligned.
+        // So comparison should work.
+
+        if (highLoc != null && locationsAreEqual(clickedLoc, highLoc)) {
+            if (lowLoc != null) {
+                player.teleport(lowLoc.clone().add(0.5, 0, 0.5)); // Teleport on the plate
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+                tpCooldowns.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
+            }
+        } else if (lowLoc != null && locationsAreEqual(clickedLoc, lowLoc)) {
+            if (highLoc != null) {
+                player.teleport(highLoc.clone().add(0.5, 0, 0.5));
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1, 1);
+                tpCooldowns.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
+            }
+        }
+    }
+    
+    private boolean locationsAreEqual(Location loc1, Location loc2) {
+        return loc1.getWorld().equals(loc2.getWorld()) &&
+               loc1.getBlockX() == loc2.getBlockX() &&
+               loc1.getBlockY() == loc2.getBlockY() &&
+               loc1.getBlockZ() == loc2.getBlockZ();
     }
 
     @EventHandler
