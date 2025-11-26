@@ -1,6 +1,7 @@
 package fr.lliksel.skydefender.model;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.Bukkit;
 
@@ -12,6 +13,7 @@ public class GameTeam {
     private final ChatColor color;
     private final Integer maxPlayer;
     private List<UUID> players;
+    private Location spawnLocation;
 
     public GameTeam(String name, ChatColor color, Integer maxPlayer) {
         this.name = name;
@@ -30,6 +32,14 @@ public class GameTeam {
 
     public Integer getMaxPlayer() {
         return this.maxPlayer;
+    }
+
+    public Location getSpawnLocation() {
+        return spawnLocation;
+    }
+
+    public void setSpawnLocation(Location spawnLocation) {
+        this.spawnLocation = spawnLocation;
     }
 
     public Player getPlayerByUUID(UUID uuid) {

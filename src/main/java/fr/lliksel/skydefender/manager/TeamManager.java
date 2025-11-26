@@ -154,11 +154,17 @@ public class TeamManager {
         }
 
         for (GameTeam team : this.teams) {
-            int x = random.nextInt(max - min) + min;
-            int z = random.nextInt(max - min) + min;
+            Location teamLocation;
 
-            int y = world.getHighestBlockYAt(x, z);
-            Location teamLocation = new Location(world, x + 0.5, y + 1, z + 0.5);
+            if (team.getSpawnLocation() != null) {
+                teamLocation = team.getSpawnLocation();
+            } else {
+                int x = random.nextInt(max - min) + min;
+                int z = random.nextInt(max - min) + min;
+
+                int y = world.getHighestBlockYAt(x, z);
+                teamLocation = new Location(world, x + 0.5, y + 1, z + 0.5);
+            }
 
             for (UUID id : team.getPlayers()) {
                 Player player = Bukkit.getPlayer(id);

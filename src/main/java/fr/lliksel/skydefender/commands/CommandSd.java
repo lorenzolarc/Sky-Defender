@@ -3,10 +3,10 @@ package fr.lliksel.skydefender.commands;
 import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.manager.GameManager;
 import fr.lliksel.skydefender.model.GameState;
+import fr.lliksel.skydefender.model.GameTeam;
 import org.bukkit.ChatColor;
 import fr.lliksel.skydefender.manager.TeamManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.block.Block;
 import org.bukkit.block.Banner;
+import java.util.Optional;
 
 public class CommandSd implements CommandExecutor {
 
@@ -31,7 +32,7 @@ public class CommandSd implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /sd <test|infos|start|banner|revive>");
+            sender.sendMessage(ChatColor.RED + "Usage: /sd <infos|start|banner|defenseur|revive>");
             return true;
         }
 
@@ -63,6 +64,23 @@ public class CommandSd implements CommandExecutor {
                 player.sendMessage(ChatColor.GREEN + "La bannière a été définie avec succès !");
             } else {
                 player.sendMessage(ChatColor.RED + "Vous devez regarder une bannière.");
+            }
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("defenseur")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Seul un joueur peut définir le spawn.");
+                return true;
+            }
+            Player player = (Player) sender;
+            Optional<GameTeam> teamOpt = teamManager.getTeamByName("Defenseurs");
+
+            if (teamOpt.isPresent()) {
+                teamOpt.get().setSpawnLocation(player.getLocation());
+                player.sendMessage(ChatColor.GREEN + "Le point de spawn des défenseurs a été défini !");
+            } else {
+                player.sendMessage(ChatColor.RED + "L'équipe Defenseurs n'existe pas.");
             }
             return true;
         }
