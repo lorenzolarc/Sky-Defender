@@ -12,8 +12,7 @@ import java.util.ArrayList;
 public class GameConfigManager {
 
     private final ConfigManager configManager;
-    
-    // Settings with default values
+
     private int mapSize = 1000;
     private int teleportSpread = 500;
     private int pvpTimeMinutes = 20;
@@ -39,20 +38,29 @@ public class GameConfigManager {
     }
 
     public void setKit(String kitName, ItemStack[] items) {
-        configManager.getConfig().set("kits." + kitName, items);
+        configManager.getConfig().set("kits." + kitName, java.util.Arrays.asList(items));
         configManager.saveConfig();
     }
 
     public ItemStack[] getKit(String kitName) {
-        List<ItemStack> list = (List<ItemStack>) configManager.getConfig().getList("kits." + kitName);
+        List<?> list = configManager.getConfig().getList("kits." + kitName);
         if (list == null) return new ItemStack[0];
-        return list.toArray(new ItemStack[0]);
+        
+        ItemStack[] items = new ItemStack[list.size()];
+        for (int i = 0; i < list.size(); i++) {
+            Object item = list.get(i);
+            if (item instanceof ItemStack) {
+                items[i] = (ItemStack) item;
+            } else {
+                items[i] = null;
+            }
+        }
+        return items;
     }
 
     public int getMapSize() { return mapSize; }
     public void setMapSize(int mapSize) { 
-        this.mapSize = mapSize; 
-        updateWorldBorder();
+        this.mapSize = mapSize;
     }
 
     public int getTeleportSpread() { return teleportSpread; }

@@ -46,19 +46,13 @@ public class KitEditorGui extends SkyDefenderGui {
 
     @Override
     public void onInventoryClick(InventoryClickEvent event) {
-        // Allow interaction so they can drop items
+
     }
-    
-    // Needs a listener for onClose to save
+
     public void onInventoryClose(InventoryCloseEvent event) {
         gameConfigManager.setKit(kitName, inventory.getContents());
         event.getPlayer().sendMessage(ChatColor.YELLOW + "Kit " + kitName + " sauvegardé !");
-        
-        // Re-open settings GUI or just stay closed?
-        // Usually better to stay closed or reopen the previous menu after a slight delay to avoid bugs,
-        // but here let's just save.
-        
-        // If we want to go back to admin menu, we need to schedule it
+
         Bukkit.getScheduler().runTaskLater(JavaPlugin.getPlugin(SkyDefender.class), () -> {
             new AdminConfigGui(teamManager).open((Player) event.getPlayer());
         }, 1L);

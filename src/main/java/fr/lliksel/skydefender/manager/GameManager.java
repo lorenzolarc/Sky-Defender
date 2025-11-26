@@ -167,6 +167,11 @@ public class GameManager {
                     }
                     
                     if (kit != null && kit.length > 0) {
+                        // Fix: Adapter la taille du kit à l'inventaire du joueur (41 slots max)
+                        // Les slots 0-35 sont l'inventaire principal, 36-39 l'armure, 40 la main secondaire.
+                        if (kit.length > 41) {
+                            kit = java.util.Arrays.copyOf(kit, 41);
+                        }
                         player.getInventory().setContents(kit);
                     }
                 }
