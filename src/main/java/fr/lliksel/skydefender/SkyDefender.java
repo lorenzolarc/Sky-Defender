@@ -44,7 +44,7 @@ public class SkyDefender extends JavaPlugin {
         teamManager.createTeam("Rouge", ChatColor.RED, 3);
 
         getLogger().info(ChatColor.GREEN + " ========================================");
-        getLogger().info(ChatColor.GREEN + " Sky Defender est chargé ! (v 1.0)");
+        getLogger().info(ChatColor.GREEN + " Sky Defender est chargé ! (v 1.1.0)");
         getLogger().info(ChatColor.GREEN + " Auteur: Lorenzo LA ROCCA (lliksel)");
         getLogger().info(ChatColor.GREEN + " GitHub: https://github.com/lorenzolarc/Sky-Defender");
         getLogger().info(ChatColor.GREEN + " ========================================");

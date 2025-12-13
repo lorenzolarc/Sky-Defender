@@ -36,7 +36,7 @@ public class CutCleanScenario extends Scenario {
         }
 
         if (drop != null) {
-            event.setDropItems(false); // Annule le drop vanilla (le minerai)
+            event.setDropItems(false);
             event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation(), drop);
             
             if (exp > 0) {

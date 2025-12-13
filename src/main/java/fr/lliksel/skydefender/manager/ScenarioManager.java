@@ -3,6 +3,7 @@ package fr.lliksel.skydefender.manager;
 import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.scenario.Scenario;
 import fr.lliksel.skydefender.scenario.impl.CutCleanScenario;
+import fr.lliksel.skydefender.scenario.impl.NoRodScenario;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +22,7 @@ public class ScenarioManager {
         // L'ordre d'ajout détermine l'ordre dans le menu GUI.
         
         registerScenario(new CutCleanScenario(plugin));
+        registerScenario(new NoRodScenario(plugin));
 
     }
 
