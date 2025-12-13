@@ -51,6 +51,22 @@ public class CommandSd implements CommandExecutor {
                 sender.sendMessage(ChatColor.RED + "La bannière n'a pas été définie ! Utilisez /sd banner en regardant une bannière.");
                 return true;
             }
+
+            if (configManager.getLocation("locations.defenseurs_spawn") == null) {
+                sender.sendMessage(ChatColor.RED + "Le point de spawn des défenseurs n'a pas été défini ! Utilisez /sd defenseur.");
+                return true;
+            }
+
+            if (teamManager.getAttackerCount() < 1) {
+                sender.sendMessage(ChatColor.RED + "Impossible de lancer la partie : Il faut au moins 1 attaquant.");
+                return true;
+            }
+
+            if (teamManager.getDefenderCount() < 1) {
+                sender.sendMessage(ChatColor.RED + "Impossible de lancer la partie : Il faut au moins 1 défenseur.");
+                return true;
+            }
+
             this.gameManager.setGameState(GameState.STARTING);
             return true;
         }
