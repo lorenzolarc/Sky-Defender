@@ -2,6 +2,7 @@ package fr.lliksel.skydefender.scenario.impl;
 
 import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.scenario.Scenario;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ExperienceOrb;
@@ -24,6 +25,7 @@ public class NoRodScenario extends Scenario {
 
     @EventHandler
     public void onRodUse(PlayerFishEvent event) {
-        event.setCancelled(true);
+        if (event.getPlayer().getGameMode() != GameMode.CREATIVE)
+            event.setCancelled(true);
     }
 }
