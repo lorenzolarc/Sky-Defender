@@ -56,7 +56,13 @@ public class ScoreboardManager {
         
         setScore(objective, ChatColor.GRAY + "------------------", 15);
         setScore(objective, ChatColor.YELLOW + "Temps: " + ChatColor.WHITE + gameManager.getGameTime(), 14);
-        setScore(objective, " ", 13);
+
+        String pvpTimer = gameManager.getRemainingPvpTime();
+        if (pvpTimer != null) {
+            setScore(objective, ChatColor.AQUA + "PvP: " + ChatColor.WHITE + pvpTimer, 13);
+        } else {
+            setScore(objective, " ", 13);
+        }
         
         Optional<GameTeam> team = teamManager.getPlayerTeam(player);
         String teamName = team.map(gameTeam -> gameTeam.getColor() + gameTeam.getName()).orElse(ChatColor.GRAY + "Aucune");

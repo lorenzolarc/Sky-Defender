@@ -141,7 +141,7 @@ public class GameListener implements Listener {
         }
 
         Bukkit.broadcastMessage(ChatColor.GOLD + "La bannière a été détruite par " + player.getDisplayName() + " !");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "Les attaquants remportent la victoire !");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "L'équipe \"" + playerTeamOpt.get().getColor() + playerTeamOpt.get().getName() + ChatColor.GOLD + "\" remporte la victoire !");
         gameManager.setGameState(GameState.FINISH);
     }
 

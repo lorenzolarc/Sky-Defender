@@ -56,6 +56,20 @@ public class GameManager {
         return String.format("%02d:%02d", minutes, seconds);
     }
 
+    public String getRemainingPvpTime() {
+        if (gameState != GameState.PLAYING) return null;
+
+        long elapsedSeconds = (System.currentTimeMillis() - gameStartTime) / 1000;
+        long pvpTimeSeconds = gameConfigManager.getPvpTimeMinutes() * 60;
+        long remaining = pvpTimeSeconds - elapsedSeconds;
+
+        if (remaining <= 0) return null;
+
+        long minutes = remaining / 60;
+        long seconds = remaining % 60;
+        return String.format("%02d:%02d", minutes, seconds);
+    }
+
     public void setGameState(GameState gameState) {
         if (this.gameState == gameState) return;
 
