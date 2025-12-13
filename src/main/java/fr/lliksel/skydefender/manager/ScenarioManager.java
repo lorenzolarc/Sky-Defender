@@ -2,10 +2,7 @@ package fr.lliksel.skydefender.manager;
 
 import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.scenario.Scenario;
-import fr.lliksel.skydefender.scenario.impl.CutCleanScenario;
-import fr.lliksel.skydefender.scenario.impl.NoLavaScenario;
-import fr.lliksel.skydefender.scenario.impl.NoPotionScenario;
-import fr.lliksel.skydefender.scenario.impl.NoRodScenario;
+import fr.lliksel.skydefender.scenario.impl.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +24,9 @@ public class ScenarioManager {
         registerScenario(new NoRodScenario(plugin));
         registerScenario(new NoPotionScenario(plugin));
         registerScenario(new NoLavaScenario(plugin));
+        registerScenario(new NoFallScenario(plugin));
+        registerScenario(new SuperKnockbackScenario(plugin));
+        registerScenario(new HasteyBoysScenario(plugin));
 
     }
 
