@@ -1,5 +1,6 @@
 package fr.lliksel.skydefender.commands;
 
+import fr.lliksel.skydefender.gui.ScenariosListGui;
 import fr.lliksel.skydefender.SkyDefender;
 import fr.lliksel.skydefender.manager.GameManager;
 import fr.lliksel.skydefender.model.GameState;
@@ -36,13 +37,26 @@ public class CommandSd implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /sd <infos|start|banner|defenseur|tpplate|revive>");
+            sender.sendMessage(ChatColor.RED + "Usage: /sd <infos|start|banner|defenseur|tpplate|revive|scenarios>");
             return true;
         }
 
         if (args[0].equalsIgnoreCase("infos")) {
             sender.sendMessage(ChatColor.YELLOW + "Plugin version: " + plugin.getDescription().getVersion());
             sender.sendMessage(ChatColor.YELLOW + "Auteurs: " + plugin.getDescription().getAuthors());
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("scenarios")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Seul un joueur peut voir les scénarios.");
+                return true;
+            }
+            if (this.gameManager.getGameState() != GameState.PLAYING) {
+                sender.sendMessage("La partie n'est pas lancée.");
+                return true;
+            }
+            new ScenariosListGui(plugin.getScenarioManager()).open((Player) sender);
             return true;
         }
 
