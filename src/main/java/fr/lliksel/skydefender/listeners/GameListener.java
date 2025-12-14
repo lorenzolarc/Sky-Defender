@@ -153,6 +153,7 @@ public class GameListener implements Listener {
         if (gameManager.isState(GameState.PLAYING)) {
             Player player = event.getEntity();
             Player killer = player.getKiller();
+            String originalDeathMessage = event.getDeathMessage();
 
             if (killer != null) {
                 gameManager.addKill(killer);
@@ -165,6 +166,17 @@ public class GameListener implements Listener {
             player.setGameMode(GameMode.SPECTATOR);
 
             Bukkit.broadcastMessage(ChatColor.GOLD + "[Sky Defender] " + ChatColor.RED + player.getDisplayName() + " est mort.");
+            
+            if (originalDeathMessage != null) {
+                String logMessage = ChatColor.GRAY + "[Log] " + originalDeathMessage;
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    Optional<GameTeam> team = teamManager.getPlayerTeam(p);
+                    if (p.isOp() || (team.isPresent() && team.get().getName().equalsIgnoreCase("Spectateur"))) {
+                        p.sendMessage(logMessage);
+                    }
+                }
+            }
+
             player.getWorld().strikeLightningEffect(player.getLocation().subtract(0, -5, 0));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1);
