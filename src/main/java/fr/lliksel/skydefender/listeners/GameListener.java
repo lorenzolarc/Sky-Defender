@@ -140,8 +140,11 @@ public class GameListener implements Listener {
             return;
         }
 
-        Bukkit.broadcastMessage(ChatColor.GOLD + "La bannière a été détruite par " + player.getDisplayName() + " !");
-        Bukkit.broadcastMessage(ChatColor.GOLD + "L'équipe \"" + playerTeamOpt.get().getColor() + playerTeamOpt.get().getName() + ChatColor.GOLD + "\" remporte la victoire !");
+        Bukkit.broadcastMessage(ChatColor.GOLD + "[Sky Defender] " + ChatColor.RED + "La bannière a été détruite par " + player.getDisplayName() + ChatColor.RED + " !");
+        
+        if (playerTeamOpt.isPresent()) {
+            broadcastWin(playerTeamOpt.get());
+        }
         gameManager.setGameState(GameState.FINISH);
     }
 
@@ -150,6 +153,7 @@ public class GameListener implements Listener {
         if (gameManager.isState(GameState.PLAYING)) {
             Player player = event.getEntity();
             Player killer = player.getKiller();
+            String originalDeathMessage = event.getDeathMessage();
 
             if (killer != null) {
                 gameManager.addKill(killer);
@@ -158,25 +162,54 @@ public class GameListener implements Listener {
             event.setDeathMessage(null);
             this.teamManager.removePlayerFromTeamWhenDeath(player);
             
-            // Mise en spectateur
             this.teamManager.addPlayerToTeam(player, "Spectateur", true);
             player.setGameMode(GameMode.SPECTATOR);
 
-            Bukkit.broadcastMessage("[Sky Defender] " + player.getDisplayName() + " est mort.");
+            Bukkit.broadcastMessage(ChatColor.GOLD + "[Sky Defender] " + ChatColor.RED + player.getDisplayName() + " est mort.");
+            
+            if (originalDeathMessage != null) {
+                String logMessage = ChatColor.GRAY + "[Log] " + originalDeathMessage;
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    Optional<GameTeam> team = teamManager.getPlayerTeam(p);
+                    if (p.isOp() || (team.isPresent() && team.get().getName().equalsIgnoreCase("Spectateur"))) {
+                        p.sendMessage(logMessage);
+                    }
+                }
+            }
+
             player.getWorld().strikeLightningEffect(player.getLocation().subtract(0, -5, 0));
             for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
                 onlinePlayer.playSound(onlinePlayer.getLocation(), Sound.ENTITY_WITHER_SPAWN, 1, 1);
             }
 
-            // Vérification de la victoire des défenseurs
             if (teamManager.getAttackerCount() == 0) {
                 Optional<GameTeam> defenders = teamManager.getTeamByName("Defenseurs");
-                if (defenders.isPresent() && !defenders.get().getPlayers().isEmpty()) {
-                    Bukkit.broadcastMessage(ChatColor.BLUE + "Les Défenseurs ont éliminé tous les attaquants !");
-                    Bukkit.broadcastMessage(ChatColor.BLUE + "Les Défenseurs remportent la victoire !");
+                if (defenders.isPresent()) {
+                    Bukkit.broadcastMessage(ChatColor.GOLD + "[Sky Defender] " + ChatColor.BLUE + "Les Défenseurs ont éliminé tous les attaquants !");
+                    broadcastWin(defenders.get());
                     gameManager.setGameState(GameState.FINISH);
                 }
             }
         }
+    }
+
+    private void broadcastWin(GameTeam winningTeam) {
+        String prefix = ChatColor.GOLD + "[Sky Defender] ";
+        
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.sendTitle(ChatColor.GOLD + "VICTOIRE", winningTeam.getColor() + winningTeam.getName(), 10, 100, 20);
+            p.playSound(p.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1, 1);
+        }
+
+        Bukkit.broadcastMessage(prefix + ChatColor.GREEN + "L'équipe " + winningTeam.getColor() + winningTeam.getName() + ChatColor.GREEN + " remporte la partie !");
+        
+        StringBuilder winners = new StringBuilder();
+        for (UUID uuid : winningTeam.getPlayers()) {
+            Player p = Bukkit.getPlayer(uuid);
+            String name = (p != null) ? p.getName() : "Déconnecté"; 
+            if (winners.length() > 0) winners.append(ChatColor.GRAY + ", ");
+            winners.append(winningTeam.getColor()).append(name);
+        }
+        Bukkit.broadcastMessage(prefix + ChatColor.GRAY + "Joueurs: " + winners.toString());
     }
 }

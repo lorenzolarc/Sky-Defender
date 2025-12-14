@@ -74,15 +74,15 @@ public class GameManager {
         if (this.gameState == gameState) return;
 
         this.gameState = gameState;
+        String prefix = ChatColor.GOLD + "[Sky Defender] ";
 
-        // Logique déclenchée lors du CHANGEMENT d'état
         switch (this.gameState) {
             case WAITING:
-                Bukkit.broadcastMessage(ChatColor.YELLOW + "[Sky Defender] En attente de joueurs...");
+                Bukkit.broadcastMessage(prefix + ChatColor.YELLOW + "En attente de joueurs...");
                 break;
 
             case STARTING:
-                Bukkit.broadcastMessage(ChatColor.GOLD + "[Sky Defender] Le jeu va démarrer !");
+                Bukkit.broadcastMessage(prefix + ChatColor.GREEN + "Le jeu va démarrer !");
                 new org.bukkit.scheduler.BukkitRunnable() {
                     int countdown = 10;
 
@@ -98,8 +98,9 @@ public class GameManager {
                             player.sendTitle(
                                 ChatColor.GOLD + "Démarrage dans",
                                 ChatColor.YELLOW + String.valueOf(countdown),
-                                10, 20, 10
+                                0, 20, 10
                             );
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1, 1);
                         }
                         countdown--;
                     }
@@ -108,13 +109,13 @@ public class GameManager {
 
             case PLAYING:
                 this.gameStartTime = System.currentTimeMillis();
-                Bukkit.broadcastMessage(ChatColor.GREEN + "[Sky Defender] La partie commence ! Bonne chance.");
+                Bukkit.broadcastMessage(prefix + ChatColor.GREEN + "La partie commence ! Bonne chance.");
                 startGameLogic();
                 
                 // PvP Timer
                 int pvpTime = gameConfigManager.getPvpTimeMinutes();
                 if (pvpTime > 0) {
-                    Bukkit.broadcastMessage(ChatColor.GOLD + "Le PvP sera activé dans " + pvpTime + " minutes.");
+                    Bukkit.broadcastMessage(prefix + ChatColor.YELLOW + "Le PvP sera activé dans " + pvpTime + " minutes.");
                     for (World world : Bukkit.getWorlds()) world.setPVP(false);
                     
                     new org.bukkit.scheduler.BukkitRunnable() {
@@ -122,19 +123,19 @@ public class GameManager {
                         public void run() {
                              if (isState(GameState.PLAYING)) {
                                  for (World world : Bukkit.getWorlds()) world.setPVP(true);
-                                 Bukkit.broadcastMessage(ChatColor.RED + "Le PvP est maintenant ACTIF !");
+                                 Bukkit.broadcastMessage(prefix + ChatColor.RED + "Le PvP est maintenant ACTIF !");
+                                 for(Player p : Bukkit.getOnlinePlayers()) p.playSound(p.getLocation(), Sound.ENTITY_ENDER_DRAGON_GROWL, 1, 1);
                              }
                         }
                     }.runTaskLater(plugin, pvpTime * 60 * 20L);
                 } else {
                     for (World world : Bukkit.getWorlds()) world.setPVP(true);
-                    Bukkit.broadcastMessage(ChatColor.RED + "Le PvP est ACTIF !");
+                    Bukkit.broadcastMessage(prefix + ChatColor.RED + "Le PvP est ACTIF !");
                 }
                 break;
 
             case FINISH:
-                Bukkit.broadcastMessage(ChatColor.RED + "[Sky Defender] La partie est terminée !");
-                // TODO: Téléporter les joueurs au lobby, arrêter les tâches, etc.
+                Bukkit.broadcastMessage(prefix + ChatColor.RED + "La partie est terminée !");
                 break;
         }
     }

@@ -48,13 +48,14 @@ Pour créer des ascenseurs rapides pour les défenseurs :
 
 ## 🛠 Commandes
 
-| Commande | Description                                                       | Permission |
-| :--- |:------------------------------------------------------------------| :--- |
-| `/sd start` | Lance le compte à rebours de la partie.                           | OP |
-| `/sd banner` | Définit la bannière ciblée comme objectif.                        | OP |
-| `/sd defenseur` | Définit votre position comme spawn défenseur.                     | OP |
-| `/sd tpplate <high/low>` | Configure les plaques de TP.                                      | OP |
-| `/sd revive <joueur> [team]` | Ressuscite un joueur mort. et l'ajoute dans la team (si spécifié) | OP |
+| Commande                     | Description                                                                                               | Permission |
+|:-----------------------------|:----------------------------------------------------------------------------------------------------------| :--- |
+| `/sd start`                  | Lance le compte à rebours de la partie.                                                                   | OP |
+| `/sd banner`                 | Définit la bannière ciblée comme objectif.                                                                | OP |
+| `/sd defenseur`              | Définit votre position comme spawn défenseur.                                                             | OP |
+| `/sd tpplate <high/low>`     | Configure les plaques de TP.                                                                              | OP |
+| `/sd revive <joueur> [team]` | Ressuscite un joueur mort. et l'ajoute dans la team (si spécifié)                                         | OP |
+| `/sd invsee <joueur>`        | Permet d'ouvrir l'inventaire du joueur et de le modifier (uniquement si l'OP est dans la team spectateur) | OP |
 
 ## 🏗 Architecture du code (Pour les dévs)
 

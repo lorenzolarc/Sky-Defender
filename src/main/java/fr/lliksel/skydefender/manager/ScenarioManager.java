@@ -27,6 +27,7 @@ public class ScenarioManager {
         registerScenario(new NoFallScenario(plugin));
         registerScenario(new SuperKnockbackScenario(plugin));
         registerScenario(new HasteyBoysScenario(plugin));
+        registerScenario(new NoNetherScenario(plugin));
 
     }
 
