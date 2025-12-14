@@ -12,6 +12,7 @@ import fr.lliksel.skydefender.manager.GameConfigManager;
 import fr.lliksel.skydefender.manager.GameManager;
 import fr.lliksel.skydefender.manager.ScoreboardManager;
 import fr.lliksel.skydefender.manager.TeamManager;
+import fr.lliksel.skydefender.manager.InvSeeManager;
 import fr.lliksel.skydefender.manager.ScenarioManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Difficulty;
@@ -26,6 +27,7 @@ public class SkyDefender extends JavaPlugin {
     private GameConfigManager gameConfigManager;
     private ChatInputManager chatInputManager;
     private ScenarioManager scenarioManager;
+    private InvSeeManager invSeeManager;
 
     @Override
     public void onEnable() {
@@ -34,8 +36,9 @@ public class SkyDefender extends JavaPlugin {
 
         this.chatInputManager = new ChatInputManager(this);
         this.gameConfigManager = new GameConfigManager(configManager);
-        this.teamManager = new TeamManager(configManager); // Uses getPlugin inside
+        this.teamManager = new TeamManager(configManager);
         this.scenarioManager = new ScenarioManager(this);
+        this.invSeeManager = new InvSeeManager(this);
         this.gameManager = new GameManager(this, this.teamManager, configManager, this.gameConfigManager);
         this.scoreboardManager = new ScoreboardManager(this, this.gameManager, this.teamManager);
 
@@ -86,5 +89,9 @@ public class SkyDefender extends JavaPlugin {
 
     public ScenarioManager getScenarioManager() {
         return scenarioManager;
+    }
+
+    public InvSeeManager getInvSeeManager() {
+        return invSeeManager;
     }
 }

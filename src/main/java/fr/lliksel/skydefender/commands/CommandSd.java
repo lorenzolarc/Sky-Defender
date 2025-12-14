@@ -37,7 +37,7 @@ public class CommandSd implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args.length == 0) {
-            sender.sendMessage(ChatColor.RED + "Usage: /sd <infos|start|banner|defenseur|tpplate|revive|scenarios>");
+            sender.sendMessage(ChatColor.RED + "Usage: /sd <infos|start|banner|defenseur|tpplate|revive|scenarios|invsee>");
             return true;
         }
 
@@ -188,6 +188,34 @@ public class CommandSd implements CommandExecutor {
             } else {
                 sender.sendMessage(ChatColor.RED + "L'équipe " + teamName + " n'existe pas.");
             }
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("invsee")) {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Seul un joueur peut voir un inventaire.");
+                return true;
+            }
+            
+            Player player = (Player) sender;
+            Optional<GameTeam> teamOpt = this.teamManager.getPlayerTeam(player);
+            
+            if (!player.isOp() || !teamOpt.isPresent() || !teamOpt.get().getName().equalsIgnoreCase("Spectateur")) {
+                sender.sendMessage(ChatColor.RED + "Uniquement un spectateur qui est op peut voir les inventaires des joueurs.");
+                return true;
+            }
+
+            if (args.length < 2) {
+                sender.sendMessage(ChatColor.RED + "Usage: /sd invsee <joueur>");
+                return true;
+            }
+            Player target = Bukkit.getPlayer(args[1]);
+            if (target == null) {
+                sender.sendMessage(ChatColor.RED + "Le joueur n'est pas connecté.");
+                return true;
+            }
+
+            plugin.getInvSeeManager().openInvSee((Player) sender, target);
             return true;
         }
 
