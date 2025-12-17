@@ -4,6 +4,8 @@
 
 ![Version](https://img.shields.io/badge/Version-1.16.5-orange) ![Java](https://img.shields.io/badge/Java-8%2B-blue) ![Build](https://img.shields.io/badge/Build-Maven-green)
 
+Le plugin est disponible sur [SpigotMC](https://www.spigotmc.org/resources/sky-defender.130861/) !
+
 ## 📋 Fonctionnalités
 
 *   **Gestion Automatique** : Lobby, Démarrage, Téléportation, PvP Timer, Fin de partie.
